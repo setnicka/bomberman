@@ -20,6 +20,7 @@ var upgrader = websocket.Upgrader{
 func WebsocketsStart(port int) error {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		// 1. Upgrade to websockets connection
+		upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			log.Errorf("Problem during upgrading to websockets: %v", err)
