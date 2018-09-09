@@ -1,0 +1,29 @@
+[{
+	"id": "player1",
+	"name": "Player 1",
+	"symbol": "P1",
+	"password": "1111",
+	"startX": 1,
+	"startY": 1
+},{
+	"id": "player2",
+	"name": "Player 2",
+	"symbol": "P2",
+	"password": "1111",
+	"startX": -1,
+	"startY": 1
+},{
+	"id": "player3",
+	"name": "Player 3",
+	"symbol": "P3",
+	"password": "1111",
+	"startX": 1,
+	"startY": -1
+},{
+	"id": "player4",
+	"name": "Player 4",
+	"symbol": "P4",
+	"password": "1111",
+	"startX": -1,
+	"startY": -1
+}]
