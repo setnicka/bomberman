@@ -1,8 +1,8 @@
 package objects
 
 import (
-	"github.com/aybabtme/bomberman/cell"
 	"github.com/nsf/termbox-go"
+	"github.com/setnicka/bomberman/cell"
 )
 
 // safety check, forces compiler to complain if they dont

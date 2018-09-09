@@ -2,7 +2,7 @@ package scheduler_test
 
 import (
 	"fmt"
-	"github.com/aybabtme/bomberman/scheduler"
+	"github.com/setnicka/bomberman/scheduler"
 )
 
 type PrintAction string

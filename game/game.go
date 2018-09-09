@@ -1,10 +1,10 @@
 package game
 
 import (
-	"github.com/aybabtme/bomberman/cell"
-	"github.com/aybabtme/bomberman/objects"
-	"github.com/aybabtme/bomberman/player"
-	"github.com/aybabtme/bomberman/scheduler"
+	"github.com/setnicka/bomberman/cell"
+	"github.com/setnicka/bomberman/objects"
+	"github.com/setnicka/bomberman/player"
+	"github.com/setnicka/bomberman/scheduler"
 	"math/rand"
 	"time"
 )

@@ -1,11 +1,11 @@
 package board
 
 import (
-	"github.com/aybabtme/bomberman/cell"
-	"github.com/aybabtme/bomberman/game"
-	"github.com/aybabtme/bomberman/objects"
-	"github.com/aybabtme/bomberman/player"
 	"github.com/nsf/termbox-go"
+	"github.com/setnicka/bomberman/cell"
+	"github.com/setnicka/bomberman/game"
+	"github.com/setnicka/bomberman/objects"
+	"github.com/setnicka/bomberman/player"
 	"math/rand"
 )
 

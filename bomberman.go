@@ -9,16 +9,16 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/aybabtme/bombertcp"
+	//"github.com/aybabtme/bombertcp"
 	"github.com/nsf/termbox-go"
 
-	"github.com/aybabtme/bomberman/board"
-	"github.com/aybabtme/bomberman/game"
-	"github.com/aybabtme/bomberman/logger"
-	"github.com/aybabtme/bomberman/objects"
-	"github.com/aybabtme/bomberman/player"
-	"github.com/aybabtme/bomberman/player/input"
-	"github.com/aybabtme/bomberman/scheduler"
+	"github.com/setnicka/bomberman/board"
+	"github.com/setnicka/bomberman/game"
+	"github.com/setnicka/bomberman/logger"
+	"github.com/setnicka/bomberman/objects"
+	"github.com/setnicka/bomberman/player"
+	"github.com/setnicka/bomberman/player/input"
+	"github.com/setnicka/bomberman/scheduler"
 )
 
 const LogLevel = logger.Debug
@@ -95,7 +95,7 @@ func main() {
 			Alive:        true,
 			GameObject:   &objects.TboxPlayer{p.Symbol},
 		}
-		game.Players[&state] = bombertcp.NewTcpPlayer(state, "0.0.0.0:40000", log)
+		//game.Players[&state] = bombertcp.NewTcpPlayer(state, "0.0.0.0:40000", log)
 	}
 
 	runtime.GOMAXPROCS(1 + len(game.Players))

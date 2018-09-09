@@ -1,0 +1,10 @@
+hash: 021e26cc1b655e66283a756d5e88109a01175c4c9cfe37ef6fb0ae3c8615f2b8
+updated: 2018-09-09T15:18:41.707733235+02:00
+imports:
+- name: github.com/gorilla/websocket
+  version: 66b9c49e59c6c48f0ffce28c2d8b8a5678502c6d
+- name: github.com/mattn/go-runewidth
+  version: ce7b0b5c7b45a81508558cd1dba6bb1e4ddb51bb
+- name: github.com/nsf/termbox-go
+  version: b66b20ab708e289ff1eb3e218478302e6aec28ce
+testImports: []

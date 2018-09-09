@@ -1,7 +1,7 @@
 package player
 
 import (
-	"github.com/aybabtme/bomberman/cell"
+	"github.com/setnicka/bomberman/cell"
 	"time"
 )
 

@@ -1,7 +1,7 @@
 package ai
 
 import (
-	"github.com/aybabtme/bomberman/player"
+	"github.com/setnicka/bomberman/player"
 	"math/rand"
 	"time"
 )

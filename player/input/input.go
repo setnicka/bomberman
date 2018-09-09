@@ -1,7 +1,7 @@
 package input
 
 import (
-	"github.com/aybabtme/bomberman/player"
+	"github.com/setnicka/bomberman/player"
 )
 
 type InputPlayer struct {
