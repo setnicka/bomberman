@@ -1,3 +1,5 @@
+Based on https://github.com/aybabtme/bomberman but changed for purpose of SKSP2018.
+
 # Bomberman!
 
 ![thiiiiis](https://f.cloud.github.com/assets/1189716/2439669/2770d5a0-adff-11e3-9c53-af0e3a59171c.png)
