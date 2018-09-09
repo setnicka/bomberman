@@ -85,13 +85,13 @@ func (c *RemotePlayerClient) SendState() {
 func (c *RemotePlayerClient) ReceiveMoves() {
 	playerConf := c.RemotePlayer.playerConf
 	for {
-		messageType, msg, err := c.Conn.ReadMessage()
+		_, msg, err := c.Conn.ReadMessage()
 		if err != nil {
 			log.Errorf("[Client %s:%d] Cannot receive move: %v", playerConf.Name, c.Id, err)
 			c.Close()
 			return
 		}
-		log.Debugf("[Client %s:%d] Received message %v: %s", playerConf.Name, c.Id, messageType, msg)
+		log.Debugf("[Client %s:%d] Received message: %s", playerConf.Name, c.Id, msg)
 		c.moveChan <- player.Move(msg)
 	}
 }
@@ -137,6 +137,7 @@ func (p *RemotePlayer) loop() {
 			select {
 			case p.outMoveChan <- move:
 				p.responseTime = time.Since(sendTime)
+				log.Debugf("[Player %s] Response time: %v", p.playerConf.ID, p.responseTime)
 			default:
 				// skip all other moves in this round
 			}
