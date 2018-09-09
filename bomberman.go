@@ -29,6 +29,8 @@ var (
 	w, h          int
 	config        Config
 	playersConfig PlayersConf
+	remotePlayers = map[string]*RemotePlayer{}
+	publicWatcher *RemotePlayer
 )
 
 func main() {
@@ -96,7 +98,13 @@ func main() {
 			GameObject:   &objects.TboxPlayer{p.Symbol},
 		}
 		//game.Players[&state] = bombertcp.NewTcpPlayer(state, "0.0.0.0:40000", log)
+		remotePlayers[p.ID] = NewRemotePlayer(p, state)
+		game.Players[&state] = remotePlayers[p.ID]
 	}
+	// Add dead public player for watching the game
+	state := player.State{Alive: false}
+	publicWatcher = NewRemotePlayer(PlayerConf{Name: "Public"}, state)
+	game.Players[&state] = publicWatcher
 
 	runtime.GOMAXPROCS(1 + len(game.Players))
 
@@ -107,7 +115,7 @@ func main() {
 	}
 
 	// 4. Init WebSockets connection
-	// TODO
+	go WebsocketsStart(port)
 
 	// 5. Terminal initialization
 	log.Debugf("Initializing termbox.")
