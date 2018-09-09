@@ -24,11 +24,11 @@ const FlameDrawer = function(ctx : CanvasRenderingContext2D, name, x, y, maxX, m
     ctx.drawImage(img, x, y, maxX, maxY);
 };
 
-const PlayerDrawer = function(ctx: CanvasRenderingContext2D, name, x, y, maxX, maxY) {
+const PlayerDrawer = function(ctx: CanvasRenderingContext2D, name: string, x, y, maxX, maxY) {
     ctx.fillStyle = "cyan";
     ctx.fillRect(x, y, maxX, maxY)
     ctx.font = "100px monospace"
-    if (name[0] = "p") {
+    if (name[0].toLowerCase() == "p" && name.length > 1) {
         name = name.substr(1);
     }
     const measuredFont = ctx.measureText(name)

@@ -80,7 +80,7 @@ const PlayerDrawer = function (ctx, name, x, y, maxX, maxY) {
     ctx.fillStyle = "cyan";
     ctx.fillRect(x, y, maxX, maxY);
     ctx.font = "100px monospace";
-    if (name[0] = "p") {
+    if (name[0].toLowerCase() == "p" && name.length > 1) {
         name = name.substr(1);
     }
     const measuredFont = ctx.measureText(name);
@@ -91,28 +91,39 @@ const PlayerDrawer = function (ctx, name, x, y, maxX, maxY) {
     ctx.fillText(name, x + freeSpace / 2, y + (maxY * 0.8));
 };
 const BombPUDrawer = function (ctx, name, x, y, maxX, maxY) {
-    ctx.fillStyle = "green";
-    ctx.fillRect(x, y, maxX, maxY);
+    const img = document.getElementById(`img-power-radius`);
+    ctx.drawImage(img, x, y, maxX, maxY);
 };
 const RadiusPUDrawer = function (ctx, name, x, y, maxX, maxY) {
-    ctx.fillStyle = "pink";
-    ctx.fillRect(x, y, maxX, maxY);
+    const img = document.getElementById(`img-power-bombs`);
+    ctx.drawImage(img, x, y, maxX, maxY);
 };
 const createDrawer = (players) => {
     const drawFunc = {
         "Wall": WallDrawer,
+        "#": WallDrawer,
         "Ground": GroundDrawer,
+        " ": GroundDrawer,
         "Rock": RockDrawer,
+        ".": RockDrawer,
         "Bomb": BombDrawer,
+        "B": BombDrawer,
         "Flame": FlameDrawer,
+        "F": FlameDrawer,
         "PowerUp(Bomb)": BombPUDrawer,
+        "N": BombPUDrawer,
         "PowerUp(Radius)": RadiusPUDrawer,
+        "R": RadiusPUDrawer,
     };
     for (const p of players) {
         drawFunc[p] = PlayerDrawer;
     }
     return (ctx, name, x, y, mx, my) => {
-        return drawFunc[name](ctx, name, x, y, mx, my);
+        if (name in drawFunc)
+            return drawFunc[name](ctx, name, x, y, mx, my);
+        else {
+            console.error(`Can't draw ${name}`);
+        }
     };
 };
 const setupDaDScrolling = (panel) => {
@@ -123,7 +134,6 @@ const setupDaDScrolling = (panel) => {
     };
 };
 const BomberClient = function (canvasId, playerName, raddr) {
-    // Get my canvas yo!
     var canvas = document.getElementById(canvasId);
     const scrollPanel = canvas.parentElement;
     setupDaDScrolling(scrollPanel);
@@ -150,15 +160,15 @@ const BomberClient = function (canvasId, playerName, raddr) {
             canvas.height = height * tileSize;
             redraw = true;
         }
-        const tileDrawer = createDrawer(["p1", "p2", "p3", "p4", "P1", "P2", "P3", "P4"]);
+        const tileDrawer = createDrawer(["p", "P", "p1", "p2", "p3", "p4", "P1", "P2", "P3", "P4"]);
         if (boardCache.board == null) {
             boardCache.board = Array.from(new Array(height)).map(_ => Array.from(new Array(width)));
         }
         for (var i = height - 1; i >= 0; i--) {
             for (var j = width - 1; j >= 0; j--) {
                 const cell = board[i][j];
-                const name = cell.Name;
-                if (!redraw && boardCache.board[i][j] == name && boardCache.lastZoom == zoom && name != "Flame") {
+                const name = cell.Name || cell;
+                if (!redraw && boardCache.board[i][j] == name && boardCache.lastZoom == zoom && name != "Flame" && name != "F") {
                     continue;
                 }
                 boardCache.board[i][j] = name;
