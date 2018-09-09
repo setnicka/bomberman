@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bomberwebxicht</title>
+  <style>
+    body, html {
+      font-family: 'Consolas', 'Courier New', Courier, monospace;
+      margin: 0;
+      padding: 0;
+    }
+    #scrollpanel {
+      overflow: scroll;
+      width: 100vw;
+      height: 100vh;
+    }
+    #scrollpanel > canvas {
+      margin-right: 300px;
+    }
+    #sidepanel {
+      width: 270px;
+      background-color: white;
+      opacity: 0.7;
+      position: fixed;
+      top: 100px;
+      right: 25px;
+      user-select: none;
+      -moz-user-select: none;
+    }
+    #zoomIn, #zoomOut {
+      width: 50px; height: 50px;
+      background-color: white;
+      font-size: 30px;
+      text-align: center;
+      line-height: 50px;
+      border: 2px black solid;
+      top: 25px;
+      position: fixed;
+      border-radius: 50%;
+      cursor: pointer;
+      user-select: none;
+      -moz-user-select: none;
+      opacity: 0.7;
+    }
+    #zoomIn { right: 75px; }
+    #zoomOut { right: 15px; }
+    #zoomIn:hover, #zoomOut:hover { background-color: lightgray }
+  </style>
+</head>
+<body>
+  <div id="scrollpanel">
+    <canvas id="canvas" width="2000" height="2000">Chcu canvas</canvas>
+  </div>
+  <div id="zoomIn" onclick="client.zoomIn()">+</div>
+  <div id="zoomOut" onclick="client.zoomOut()">-</div>
+  <div id="sidepanel">
+    <ul>
+      <li>#1 - p1 (Bazmek, Robot, Udelator)<br /> 300 bodů, 12 bomb, 30 radius</li>
+      <li>#2 - p2 (Bazmek, Robot, Udelator)<br /> 300 bodů, 12 bomb, 30 radius</li>
+      <li>#3 - p3 (Bazmek, Robot, Udelator)<br /> 300 bodů, 12 bomb, 30 radius</li>
+      <li>#4 - p4 (Bazmek, Robot, Udelator)<br /> 300 bodů, 12 bomb, 30 radius</li>
+      <li>#5 - p5 (Bazmek, Robot, Udelator)<br /> 300 bodů, 12 bomb, 30 radius</li>
+      <li>#6 - p6 (Bazmek, Robot, Udelator)<br /> 300 bodů, 12 bomb, 30 radius</li>
+    </ul>
+  </div>
+  <div style="height: 0px; overflow: hidden;">
+    <img src="img/bomb.png" id="img-bomb" />
+    <img src="img/fire1.png" id="img-flame1" />
+    <img src="img/fire2.png" id="img-flame2" />
+    <img src="img/fire3.png" id="img-flame3" />
+    <img src="img/fire4.png" id="img-flame4" />
+    <img src="img/wall.png" id="img-wall" />
+  </div>
+<script src="/data.js"></script>
+<script src="/script.js"></script>
+<script>
+var client = BomberClient("canvas", "public", "localhost:8000");
+</script>
+</body>
+</html>
