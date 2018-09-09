@@ -34,7 +34,7 @@ const BomberClient = function(canvasId: string, playerName: string, raddr: strin
       canvas.height = height * tileSize
       redraw = true
     }
-    const tileDrawer = createDrawer(["p1", "p2", "p3", "p4", "P1", "P2", "P3", "P4"])
+    const tileDrawer = createDrawer(["p", "P", "p1", "p2", "p3", "p4", "P1", "P2", "P3", "P4"])
 
     if (boardCache.board == null) {
       boardCache.board = Array.from(new Array(height)).map(_ => Array.from(new Array(width)))
@@ -43,8 +43,8 @@ const BomberClient = function(canvasId: string, playerName: string, raddr: strin
     for (var i = height - 1; i >= 0; i--) {
       for (var j = width - 1; j >= 0; j--) {
         const cell = board[i][j];
-        const name = cell.Name;
-        if (!redraw && boardCache.board[i][j] == name && boardCache.lastZoom == zoom && name != "Flame") {
+        const name = cell.Name || cell;
+        if (!redraw && boardCache.board[i][j] == name && boardCache.lastZoom == zoom && name != "Flame" && name != "F") {
           continue
         }
         boardCache.board[i][j] = name

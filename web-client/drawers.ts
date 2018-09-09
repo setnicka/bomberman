@@ -40,29 +40,40 @@ const PlayerDrawer = function(ctx: CanvasRenderingContext2D, name, x, y, maxX, m
 };
 
 const BombPUDrawer = function(ctx, name, x, y, maxX, maxY) {
-    ctx.fillStyle = "green";
-    ctx.fillRect(x, y, maxX, maxY)
+    const img = document.getElementById(`img-power-radius`) as HTMLImageElement
+    ctx.drawImage(img, x, y, maxX, maxY);
 };
 
 const RadiusPUDrawer = function(ctx, name, x, y, maxX, maxY) {
-    ctx.fillStyle = "pink";
-    ctx.fillRect(x, y, maxX, maxY)
+    const img = document.getElementById(`img-power-bombs`) as HTMLImageElement
+    ctx.drawImage(img, x, y, maxX, maxY);
 };
 
 const createDrawer = (players: string[]) => {
     const drawFunc = {
         "Wall": WallDrawer,
+        "#": WallDrawer,
         "Ground": GroundDrawer,
+        " ": GroundDrawer,
         "Rock": RockDrawer,
+        ".": RockDrawer,
         "Bomb": BombDrawer,
+        "B": BombDrawer,
         "Flame": FlameDrawer,
+        "F": FlameDrawer,
         "PowerUp(Bomb)": BombPUDrawer,
+        "N": BombPUDrawer,
         "PowerUp(Radius)": RadiusPUDrawer,
+        "R": RadiusPUDrawer,
     }
     for (const p of players) {
         drawFunc[p] = PlayerDrawer
     }
     return (ctx, name, x, y, mx, my) => {
-        return drawFunc[name](ctx, name, x, y, mx, my)
+        if (name in drawFunc)
+            return drawFunc[name](ctx, name, x, y, mx, my)
+        else {
+            console.error(`Can't draw ${name}`)
+        }
     }
 }
