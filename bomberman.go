@@ -1,7 +1,17 @@
 package main
 
 import (
+	"encoding/json"
+	"flag"
 	"fmt"
+	"io/ioutil"
+	"math/rand"
+	"runtime"
+	"time"
+
+	"github.com/aybabtme/bombertcp"
+	"github.com/nsf/termbox-go"
+
 	"github.com/aybabtme/bomberman/board"
 	"github.com/aybabtme/bomberman/game"
 	"github.com/aybabtme/bomberman/logger"
@@ -9,16 +19,8 @@ import (
 	"github.com/aybabtme/bomberman/player"
 	"github.com/aybabtme/bomberman/player/input"
 	"github.com/aybabtme/bomberman/scheduler"
-	"github.com/aybabtme/bombertcp"
-	"github.com/nsf/termbox-go"
-	"math/rand"
-	"runtime"
-	"time"
 )
 
-func init() {
-	rand.Seed(time.Now().UTC().UnixNano())
-}
 
 const (
 	MinX = 1
@@ -45,6 +47,7 @@ const (
 	TurnsToReplenish = 12
 	TurnsToExplode   = 10
 )
+const LogLevel = logger.Debug
 
 var (
 	h, w int
@@ -109,8 +112,8 @@ var (
 )
 
 func main() {
-
 	log.Infof("Starting Bomberman")
+	rand.Seed(time.Now().UTC().UnixNano())
 
 	log.Infof("TurnsToFlamout=%d", TurnsToFlamout)
 	log.Infof("TurnsToReplenish=%d", TurnsToReplenish)
@@ -170,7 +173,7 @@ func main() {
 }
 
 func MainLoop(g *game.Game, board board.Board, evChan <-chan termbox.Event) {
-	for _ = range g.TurnTick.C {
+	for range g.TurnTick.C {
 		if g.IsDone() {
 			log.Infof("Game requested to stop.")
 			return

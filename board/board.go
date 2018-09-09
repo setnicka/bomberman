@@ -22,7 +22,7 @@ func newBoard(x, y int) Board {
 func SetupBoard(g *game.Game, x, y, rockFreeRadius int, rockDensity float64) Board {
 	board := newBoard(x, y)
 
-	freeCells := board.setupMap()
+	freeCells := board.putwWalls()
 	rockPlaced := board.setupRocks(freeCells, rockDensity)
 	cleared := board.clearAroundPlayers(g.Players, rockFreeRadius)
 	rockPlaced -= cleared
@@ -49,7 +49,7 @@ func SetupBoard(g *game.Game, x, y, rockFreeRadius int, rockDensity float64) Boa
 	return board
 }
 
-func (b Board) setupMap() (free int) {
+func (b Board) putwWalls() (free int) {
 	b.forEachIndex(func(_ *cell.Cell, x, y int) {
 		b[x][y] = cell.NewCell(objects.Ground, x, y)
 		switch {
