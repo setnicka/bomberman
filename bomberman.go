@@ -163,13 +163,14 @@ func MainLoop(g *game.Game, board board.Board, evChan <-chan termbox.Event) {
 
 		receiveEvents(g, evChan)
 
+		applyPlayerMoves(g, board)
+
 		g.RunSchedule(func(a scheduler.Action, turn int) error {
 			act := a.(*BomberAction)
 			log.Debugf("[%s] !!! turn %d/%d", act.name, turn, act.Duration())
 			return act.doTurn(turn)
 		})
 
-		applyPlayerMoves(g, board)
 		board.Draw(g.Players)
 		updatePlayers(g, board)
 
