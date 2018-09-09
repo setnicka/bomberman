@@ -148,8 +148,8 @@ const BomberClient = function (canvasId, playerName, raddr) {
         if (packet == null)
             return;
         const board = packet.Board;
-        const height = board.length;
-        const width = board[0].length;
+        const width = board.length;
+        const height = board[0].length;
         const tileSize = 50 * zoom;
         let redraw = false;
         if (canvas.width != width * tileSize) {
@@ -166,7 +166,7 @@ const BomberClient = function (canvasId, playerName, raddr) {
         }
         for (var i = height - 1; i >= 0; i--) {
             for (var j = width - 1; j >= 0; j--) {
-                const cell = board[i][j];
+                const cell = board[j][i];
                 const name = cell.Name || cell;
                 if (!redraw && boardCache.board[i][j] == name && boardCache.lastZoom == zoom && name != "Flame" && name != "F") {
                     continue;
