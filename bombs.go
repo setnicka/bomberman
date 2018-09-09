@@ -53,14 +53,14 @@ func placeBomb(board board.Board, game *game.Game, placerState *player.State) {
 			name:     fmt.Sprintf("%s.doFlameout", placer.Name()),
 			duration: 1,
 			doTurn:   doFlameout,
-		}, TurnsToFlamout)
+		}, config.TurnsToFlamout)
 
 		log.Debugf("[%s] Registering bomb replenishment.", placer.Name())
 		game.Schedule.Register(&BomberAction{
 			name:     fmt.Sprintf("%s.replenishBomb", placer.Name()),
 			duration: 1,
 			doTurn:   replenishBomb,
-		}, TurnsToReplenish)
+		}, config.TurnsToReplenishUsedBomb)
 
 		return nil
 	}
@@ -74,7 +74,7 @@ func placeBomb(board board.Board, game *game.Game, placerState *player.State) {
 			name:     fmt.Sprintf("%s.doExplosion", placer.Name()),
 			duration: 1,
 			doTurn:   doExplosion,
-		}, TurnsToExplode)
+		}, config.TurnsToExplode)
 		return nil
 	}
 

@@ -21,123 +21,95 @@ import (
 	"github.com/aybabtme/bomberman/scheduler"
 )
 
-
-const (
-	MinX = 1
-	MaxX = 49
-	MinY = 1
-	MaxY = 21
-)
-
-const (
-	LogLevel = logger.Info
-
-	RockFreeArea = 1
-	RockDensity  = 0.50
-
-	TotalRadiusPU = 20
-	TotalBombPU   = 20
-
-	DefaultMaxBomb    = 3
-	DefaultBombRadius = 3
-
-	TurnDuration = time.Millisecond * 200
-
-	TurnsToFlamout   = 3
-	TurnsToReplenish = 12
-	TurnsToExplode   = 10
-)
 const LogLevel = logger.Debug
 
 var (
-	h, w int
-
 	log = logger.New("", "bomb.log", LogLevel)
 
-	leftTopCorner = player.State{
-		Name:         "p1",
-		X:            MinX,
-		Y:            MinY,
-		LastX:        -1,
-		LastY:        -1,
-		TurnDuration: TurnDuration,
-		Bombs:        0,
-		MaxBomb:      DefaultMaxBomb,
-		MaxRadius:    DefaultBombRadius,
-		Alive:        true,
-		GameObject:   &objects.TboxPlayer{"p1"},
-	}
-
-	rightBottomCorner = player.State{
-		Name:         "p2",
-		X:            MaxX,
-		Y:            MaxY,
-		LastX:        -1,
-		LastY:        -1,
-		TurnDuration: TurnDuration,
-		Bombs:        0,
-		MaxBomb:      DefaultMaxBomb,
-		MaxRadius:    DefaultBombRadius,
-		Alive:        true,
-		GameObject:   &objects.TboxPlayer{"p2"},
-	}
-
-	leftBottomCorner = player.State{
-		Name:         "p3",
-		X:            MinX,
-		Y:            MaxY,
-		LastX:        -1,
-		LastY:        -1,
-		TurnDuration: TurnDuration,
-		Bombs:        0,
-		MaxBomb:      DefaultMaxBomb,
-		MaxRadius:    DefaultBombRadius,
-		Alive:        true,
-		GameObject:   &objects.TboxPlayer{"p3"},
-	}
-
-	rightTopCorner = player.State{
-		Name:         "p4",
-		X:            MaxX,
-		Y:            MinY,
-		LastX:        -1,
-		LastY:        -1,
-		TurnDuration: TurnDuration,
-		Bombs:        0,
-		MaxBomb:      DefaultMaxBomb,
-		MaxRadius:    DefaultBombRadius,
-		Alive:        true,
-		GameObject:   &objects.TboxPlayer{"p4"},
-	}
+	w, h          int
+	config        Config
+	playersConfig PlayersConf
 )
 
 func main() {
 	log.Infof("Starting Bomberman")
 	rand.Seed(time.Now().UTC().UnixNano())
 
-	log.Infof("TurnsToFlamout=%d", TurnsToFlamout)
-	log.Infof("TurnsToReplenish=%d", TurnsToReplenish)
-	log.Infof("TurnsToExplode=%d", TurnsToExplode)
+	// 1. Parse command line arguments
+	var (
+		gameConfigFile    string
+		playersConfigFile string
+		port              int
+	)
+	flag.StringVar(&gameConfigFile, "config", "config.json", "Choose `file` with game configuration.")
+	flag.StringVar(&playersConfigFile, "players", "players.json", "Choose `file` with players configuration.")
+	flag.IntVar(&port, "port", 8000, "Set `port` for remote players")
+	flag.Parse()
 
-	game := game.NewGame(TurnDuration, TotalBombPU, TotalRadiusPU)
+	// 2. Load config
+	rawConfig, err := ioutil.ReadFile(gameConfigFile)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(rawConfig, &config); err != nil {
+		panic(err)
+	}
+	log.Debugf("Config: %+v", config)
 
-	log.Debugf("Initializing local player.")
-	localState := &leftTopCorner
-	localPlayer, inputChan := initLocalPlayer(*localState)
+	// 2. Load players
+	rawPlayers, err := ioutil.ReadFile(playersConfigFile)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(rawPlayers, &playersConfig); err != nil {
+		panic(err)
+	}
+	for i, player := range playersConfig {
+		if player.StartX < 0 {
+			player.StartX += config.Width + 1
+		}
+		if player.StartY < 0 {
+			player.StartY += config.Height + 1
+		}
+		playersConfig[i] = player
+	}
+	log.Debugf("Players: %+v", playersConfig)
 
-	game.Players = map[*player.State]player.Player{
-		localState:         localPlayer,
-		&rightBottomCorner: bombertcp.NewTcpPlayer(rightBottomCorner, "0.0.0.0:40000", log),
+	// 3. init game
+	log.Infof("Initializing game")
+	turnDuration := time.Duration(config.TurnDuration) * time.Millisecond
+	game := game.NewGame(turnDuration, config.TotalBombsPowerups, config.TotalRadiusPowerups)
+
+	game.Players = map[*player.State]player.Player{}
+	for _, p := range playersConfig {
+		state := player.State{
+			Name:         p.Name,
+			X:            p.StartX,
+			Y:            p.StartY,
+			LastX:        -1,
+			LastY:        -1,
+			TurnDuration: turnDuration,
+			Bombs:        0,
+			MaxBomb:      config.DefaultMaxBombs,
+			MaxRadius:    config.DefaultBombRadius,
+			Alive:        true,
+			GameObject:   &objects.TboxPlayer{p.Symbol},
+		}
+		game.Players[&state] = bombertcp.NewTcpPlayer(state, "0.0.0.0:40000", log)
 	}
 
 	runtime.GOMAXPROCS(1 + len(game.Players))
 
 	log.Debugf("Setup board.")
-	board := board.SetupBoard(game, MaxX+2, MaxY+2, RockFreeArea, RockDensity)
+	board := board.SetupBoard(game, config.Width+2, config.Height+2, config.FreeAreaAroundPlayers, config.RockDensity)
 	for pState := range game.Players {
 		pState.Board = board.Clone()
 	}
 
+	// 4. Init WebSockets connection
+	// TODO
+
+	// 5. Terminal initialization
 	log.Debugf("Initializing termbox.")
 	if err := termbox.Init(); err != nil {
 		panic(err)
@@ -151,16 +123,18 @@ func main() {
 		log.Debugf("Polling events.")
 		for {
 			ev := termbox.PollEvent()
-			if pm, ok := toPlayerMove(ev); ok {
-				select {
-				case inputChan <- pm:
-				default:
-					log.Debugf("Dropping event '%#v', player not reading.", ev.Type)
+			/*
+				if pm, ok := toPlayerMove(ev); ok {
+					select {
+					case inputChan <- pm:
+					default:
+						log.Debugf("Dropping event '%#v', player not reading.", ev.Type)
+					}
+				} else {
+					evChan <- ev
 				}
-
-			} else {
-				evChan <- ev
-			}
+			*/
+			evChan <- ev
 		}
 	}()
 
