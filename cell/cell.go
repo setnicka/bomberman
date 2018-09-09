@@ -2,6 +2,7 @@ package cell
 
 type GameObject interface {
 	String() string
+	Symbol() rune
 	Draw(x, y int)
 	Traversable() bool
 }

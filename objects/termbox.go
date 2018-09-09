@@ -21,6 +21,7 @@ var (
 			Bg: termbox.ColorBlack,
 		},
 		"Wall",
+		'#',
 		false,
 	}
 
@@ -31,6 +32,7 @@ var (
 			Bg: termbox.ColorBlack,
 		},
 		"Rock",
+		'.',
 		false,
 	}
 
@@ -41,6 +43,7 @@ var (
 			Bg: termbox.ColorDefault,
 		},
 		"Ground",
+		' ',
 		true,
 	}
 
@@ -51,6 +54,7 @@ var (
 			Bg: termbox.ColorDefault,
 		},
 		"Bomb",
+		'B',
 		false,
 	}
 
@@ -61,6 +65,7 @@ var (
 			Bg: termbox.ColorDefault,
 		},
 		"Flame",
+		'F',
 		true,
 	}
 
@@ -71,6 +76,7 @@ var (
 			Bg: termbox.ColorMagenta,
 		},
 		"PowerUp(Bomb)",
+		'n',
 		true,
 	}
 
@@ -81,6 +87,7 @@ var (
 			Bg: termbox.ColorMagenta,
 		},
 		"PowerUp(Radius)",
+		'r',
 		true,
 	}
 )
@@ -88,6 +95,7 @@ var (
 type TboxObj struct {
 	*termbox.Cell
 	name        string
+	symbol      rune
 	traversable bool
 }
 
@@ -102,6 +110,10 @@ func (t *TboxObj) Traversable() bool {
 
 func (t *TboxObj) String() string {
 	return t.name
+}
+
+func (t *TboxObj) Symbol() rune {
+	return t.symbol
 }
 
 type TboxPlayer struct {
@@ -120,4 +132,8 @@ func (t TboxPlayer) Traversable() bool {
 
 func (t *TboxPlayer) String() string {
 	return t.Name
+}
+
+func (t *TboxPlayer) Symbol() rune {
+	return 'P'
 }

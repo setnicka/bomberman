@@ -110,8 +110,9 @@ func main() {
 
 	log.Debugf("Setup board.")
 	board := board.SetupBoard(game, config.Width+2, config.Height+2, config.FreeAreaAroundPlayers, config.RockDensity)
+	exportedBoard := board.Export()
 	for pState := range game.Players {
-		pState.Board = board.Clone()
+		pState.Board = &exportedBoard
 	}
 
 	// 4. Init WebSockets connection
@@ -250,8 +251,9 @@ func applyPlayerMoves(g *game.Game, board board.Board) {
 }
 
 func updatePlayers(game *game.Game, board board.Board) {
+	exportedBoard := board.Export()
 	for pState, player := range game.Players {
-		pState.Board = board.Clone()
+		pState.Board = &exportedBoard
 		pState.Turn = game.Turn()
 		select {
 		case player.Update() <- *pState:

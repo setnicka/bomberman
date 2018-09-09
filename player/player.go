@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+type ExportedBoard []string
+
 type State struct {
 	Turn                      int
 	TurnDuration              time.Duration
@@ -12,7 +14,7 @@ type State struct {
 	X, Y, LastX, LastY        int
 	Bombs, MaxBomb, MaxRadius int
 	Alive                     bool
-	Board                     [][]*cell.Exported
+	Board                     *ExportedBoard
 	GameObject                cell.GameObject
 	Message                   string
 }
