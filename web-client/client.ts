@@ -7,8 +7,7 @@ const setupDaDScrolling = (panel: HTMLElement) => {
 }
 
 
-const BomberClient = function(canvasId, playerName, raddr) {
-  // Get my canvas yo!
+const BomberClient = function(canvasId: string, playerName: string, raddr: string) {
   var canvas = document.getElementById(canvasId) as HTMLCanvasElement
   const scrollPanel = canvas.parentElement!
   setupDaDScrolling(scrollPanel)
