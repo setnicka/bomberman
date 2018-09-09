@@ -2,17 +2,32 @@ import websocket
 import sys
 import random
 import time
+import json
 
 try:
     import thread
 except ImportError:
     import _thread as thread
 
-foo = ['up', 'down', 'left', 'right']
+directions = [
+        ['up', 0, -1],
+        ['down', 0, 1],
+        ['left', -1, 0],
+        ['right', 1, 0],
+]
 
 def on_message(ws, message):
     print("{}\tReceived message ({} bytes)".format(time.time(), len(message)))
-    move = random.choice(foo)
+    state = json.loads(message)
+    (X, Y) = (state['X'], state['Y'])
+    # print(state)
+
+    moves = []
+    for (move, xChange, yChange) in directions:
+        if state['Board'][X + xChange][Y + yChange] == ' ':
+            moves.append(move)
+    move = random.choice(moves)
+
     print("{}\tSending: {}".format(time.time(), move))
     ws.send(move)
 
