@@ -1,9 +1,9 @@
 package ai
 
 import (
-	"github.com/setnicka/bomberman/player"
 	"math/rand"
-	"time"
+
+	"github.com/setnicka/bomberman/player"
 )
 
 type RandomPlayer struct {
@@ -35,7 +35,7 @@ func NewRandomPlayer(state player.State, seed int64) player.Player {
 			case 4:
 				m = player.PutBomb
 			default:
-				time.Sleep(time.Duration(n) * state.TurnDuration)
+				//time.Sleep(time.Duration(n) * state.TurnDuration)
 				continue
 			}
 			r.outMove <- m

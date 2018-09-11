@@ -8,7 +8,7 @@ import (
 )
 
 type Config struct {
-	PubliConfig
+	PublicConfig
 
 	Width       int     `json:"width"`
 	Height      int     `json:"height"`
@@ -23,7 +23,7 @@ type Config struct {
 	TotalBombsPowerups    int `json:"total_bombs_powerups"`
 }
 
-type PubliConfig struct {
+type PublicConfig struct {
 	TurnsToFlamout           int `json:"turns_to_flamout"`
 	TurnsToReplenishUsedBomb int `json:"turns_to_replenish_used_bomb"`
 	TurnsToExplode           int `json:"turns_to_explode"`

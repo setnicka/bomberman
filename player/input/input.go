@@ -1,4 +1,4 @@
-package input
+package inputplayer
 
 import (
 	"github.com/setnicka/bomberman/player"
@@ -13,7 +13,7 @@ type InputPlayer struct {
 	outMove chan player.Move
 }
 
-func NewInputPlayer(state player.State, input <-chan player.Move) player.Player {
+func New(state player.State, input <-chan player.Move) player.Player {
 	i := &InputPlayer{
 		state:   state,
 		update:  make(chan player.State),

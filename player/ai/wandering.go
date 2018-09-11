@@ -1,9 +1,9 @@
 package ai
 
 import (
-	"github.com/setnicka/bomberman/player"
 	"math/rand"
-	"time"
+
+	"github.com/setnicka/bomberman/player"
 )
 
 type WanderingPlayer struct {
@@ -33,7 +33,7 @@ func NewWanderingPlayer(state player.State, seed int64) *WanderingPlayer {
 			case 3:
 				m = player.Right
 			default:
-				time.Sleep(time.Duration(n) * state.TurnDuration)
+				//time.Sleep(time.Duration(n) * state.TurnDuration)
 				continue
 			}
 			w.outMove <- m
