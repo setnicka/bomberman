@@ -43,28 +43,3 @@ type PlayerConf struct {
 	StartX   int    `json:"startX"`
 	StartY   int    `json:"startY"`
 }
-
-type RemotePlayer struct {
-	playerConf PlayerConf
-	state      player.State
-
-	// Outer communication
-	updateChan  chan player.State
-	moveChan    chan player.Move
-	outMoveChan chan player.Move
-
-	// State distribution to clients
-	clientChannels       map[*RemotePlayerClient]chan *player.State
-	clientUnregisterChan chan *RemotePlayerClient
-	lastClientId         int
-
-	responseTime time.Duration
-}
-
-type RemotePlayerClient struct {
-	Id           int
-	RemotePlayer *RemotePlayer
-	Conn         *websocket.Conn
-	updateChan   chan *player.State
-	moveChan     chan player.Move
-}
