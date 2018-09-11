@@ -12,6 +12,7 @@ type BasicState struct {
 	X, Y, LastX, LastY     int
 	Bombs, MaxBomb, Radius int
 	Alive                  bool
+	Points                 int
 }
 
 // State holds all info for one player (including link to exported board and to the other players).

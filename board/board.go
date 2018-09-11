@@ -175,9 +175,6 @@ func (b Board) AsCross(x, y, dist int, apply func(*cell.Cell) bool) {
 	var c *cell.Cell
 	for i := x; i < min(x+dist, len(b)); i++ {
 		c = b[i][y]
-		if c.Top() == objects.Wall {
-			break
-		}
 		if !apply(c) {
 			break
 		}
@@ -186,9 +183,6 @@ func (b Board) AsCross(x, y, dist int, apply func(*cell.Cell) bool) {
 	// left of (x,y)
 	for i := x - 1; i > max(x-dist, 0); i-- {
 		c = b[i][y]
-		if c.Top() == objects.Wall {
-			break
-		}
 		if !apply(c) {
 			break
 		}
@@ -197,9 +191,6 @@ func (b Board) AsCross(x, y, dist int, apply func(*cell.Cell) bool) {
 	// below (x,y)
 	for j := y + 1; j < min(y+dist, len(b)); j++ {
 		c = b[x][j]
-		if c.Top() == objects.Wall {
-			break
-		}
 		if !apply(c) {
 			break
 		}
@@ -208,9 +199,6 @@ func (b Board) AsCross(x, y, dist int, apply func(*cell.Cell) bool) {
 	// above (x,y)
 	for j := y - 1; j > max(y-dist, 0); j-- {
 		c = b[x][j]
-		if c.Top() == objects.Wall {
-			break
-		}
 		if !apply(c) {
 			break
 		}

@@ -12,5 +12,9 @@
 	"default_max_bombs": 3,
 	"default_bomb_radius": 3,
 	"total_radius_powerups": 20,
-	"total_bombs_powerups": 20
+	"total_bombs_powerups": 20,
+
+	"points_per_wall": 1,
+	"points_per_kill": 10,
+	"points_per_suicide": -10
 }

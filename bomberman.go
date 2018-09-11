@@ -316,6 +316,10 @@ func movePlayer(g *game.Game, board board.Board, pState *player.State, action pl
 		if board[nextX][nextY].Top() == objects.Flame {
 			pState.Alive = false
 			log.Infof("[%s] Died moving into flame.", pState.Name)
+			// Count points for such obvious suicide
+			log.Infof("[%s] Receiving %d points for suicide", pState.Name, config.PointsPerSuicide)
+			pState.Points += config.PointsPerSuicide
+			// Remove player from cell
 			cell := board[pState.X][pState.Y]
 			if !cell.Remove(pState.GameObject) {
 				log.Panicf("[%s] player not found at (%d, %d), cell=%#v",

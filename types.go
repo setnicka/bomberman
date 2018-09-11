@@ -22,6 +22,10 @@ type Config struct {
 	DefaultBombRadius     int `json:"default_bomb_radius"`
 	TotalRadiusPowerups   int `json:"total_radius_powerups"`
 	TotalBombsPowerups    int `json:"total_bombs_powerups"`
+
+	PointsPerWall    int `json:"points_per_wall"`
+	PointsPerKill    int `json:"points_per_kill"`
+	PointsPerSuicide int `json:"points_per_suicide"`
 }
 
 type PlayersConf []PlayerConf

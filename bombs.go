@@ -46,7 +46,7 @@ func placeBomb(board board.Board, game *game.Game, placerState *player.State) {
 	doExplosion := func(turn int) error {
 		log.Debugf("[%s] Bomb exploding.", placer.Name())
 
-		explode(game, board, x, y, radius)
+		explode(game, board, x, y, radius, placerState)
 
 		log.Debugf("[%s] Registering flameout.", placer.Name())
 		game.Schedule.Register(&BomberAction{
@@ -85,7 +85,7 @@ func placeBomb(board board.Board, game *game.Game, placerState *player.State) {
 
 }
 
-func explode(game *game.Game, board board.Board, explodeX, explodeY, radius int) {
+func explode(game *game.Game, board board.Board, explodeX, explodeY, radius int, placerState *player.State) {
 	board[explodeX][explodeY].Remove(objects.Bomb)
 	board.AsCross(explodeX, explodeY, radius, func(c *cell.Cell) bool {
 
@@ -94,27 +94,36 @@ func explode(game *game.Game, board board.Board, explodeX, explodeY, radius int)
 			if c.X == x && c.Y == y {
 				log.Infof("[%s] Dying in explosion.", player.Name())
 				playerState.Alive = false
+
+				// Count points:
+				placer := game.Players[placerState]
+				if playerState == placerState {
+					log.Infof("[%s] Receiving %d points for suicide", placer.Name(), config.PointsPerSuicide)
+					placerState.Points += config.PointsPerSuicide
+				} else {
+					log.Infof("[%s] Receiving %d points for killing '%s'", placer.Name(), config.PointsPerKill, player.Name)
+					placerState.Points += config.PointsPerKill
+				}
 			}
 		}
 
 		switch c.Top() {
 		case objects.Wall:
+			return false
 		case objects.Rock:
 			c.Push(objects.Flame)
+			// Add points to the placer
+			placerState.Points += config.PointsPerWall
 			return false
-		case objects.BombPU, objects.RadiusPU: // Explosions kill PowerUps
+		case objects.BombPU, objects.RadiusPU:
+			// Explosions kill PowerUps and continues
 			c.Pop()
 			c.Push(objects.Flame)
-			return false
-		default:
-			c.Push(objects.Flame)
-			return true
+			//return false
 		}
 
-		if c.Top() != objects.Wall {
-			c.Push(objects.Flame)
-		}
-
+		// Default action - put flame and continue
+		c.Push(objects.Flame)
 		return true
 	})
 }
@@ -122,12 +131,15 @@ func explode(game *game.Game, board board.Board, explodeX, explodeY, radius int)
 func removeFlame(board board.Board, x, y, radius int) {
 	board.AsCross(x, y, radius, func(c *cell.Cell) bool {
 		if c.Top() == objects.Flame {
+			// Remove flame
 			c.Pop()
+			// And remove rock if there was some
+			if c.Top() == objects.Rock {
+				c.Pop()
+				return false
+			}
+			return true
 		}
-		if c.Top() == objects.Rock {
-			c.Pop()
-			return false
-		}
-		return true
+		return false
 	})
 }
