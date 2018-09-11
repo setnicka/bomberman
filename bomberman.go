@@ -85,24 +85,25 @@ func main() {
 	game.Players = map[*player.State]player.Player{}
 	for _, p := range playersConfig {
 		state := player.State{
-			Name:         p.Name,
-			X:            p.StartX,
-			Y:            p.StartY,
-			LastX:        -1,
-			LastY:        -1,
-			TurnDuration: turnDuration,
-			Bombs:        0,
-			MaxBomb:      config.DefaultMaxBombs,
-			MaxRadius:    config.DefaultBombRadius,
-			Alive:        true,
-			GameObject:   &objects.TboxPlayer{p.Symbol},
+			BasicState: player.BasicState{
+				Name:    p.Name,
+				X:       p.StartX,
+				Y:       p.StartY,
+				LastX:   -1,
+				LastY:   -1,
+				Bombs:   config.DefaultMaxBombs,
+				MaxBomb: config.DefaultMaxBombs,
+				Radius:  config.DefaultBombRadius,
+				Alive:   true,
+			},
+			GameObject: &objects.TboxPlayer{p.Symbol},
 		}
 		//game.Players[&state] = bombertcp.NewTcpPlayer(state, "0.0.0.0:40000", log)
 		remotePlayers[p.ID] = NewRemotePlayer(p, state)
 		game.Players[&state] = remotePlayers[p.ID]
 	}
 	// Add dead public player for watching the game
-	state := player.State{Alive: false}
+	state := player.State{BasicState: player.BasicState{Alive: false}, Hidden: true}
 	publicWatcher = NewRemotePlayer(PlayerConf{Name: "Public"}, state)
 	game.Players[&state] = publicWatcher
 
@@ -111,8 +112,17 @@ func main() {
 	log.Debugf("Setup board.")
 	board := board.SetupBoard(game, config.Width+2, config.Height+2, config.FreeAreaAroundPlayers, config.RockDensity)
 	exportedBoard := board.Export()
+	// Construct links for basic state of other players
+	playersStates := []*player.BasicState{}
+	for pState := range game.Players {
+		if !pState.Hidden {
+			playersStates = append(playersStates, &pState.BasicState)
+		}
+	}
+	// Add links to other players and to the current exported board to the players states
 	for pState := range game.Players {
 		pState.Board = &exportedBoard
+		pState.Players = playersStates
 	}
 
 	// 4. Init WebSockets connection
@@ -346,8 +356,8 @@ func pickPowerUps(board board.Board, pState *player.State, x, y int) {
 		c.Pop()
 		log.Infof("[%s] Powerup! Max bombs: %d", pState.Name, pState.MaxBomb)
 	case objects.RadiusPU:
-		pState.MaxRadius++
+		pState.Radius++
 		c.Pop()
-		log.Infof("[%s] Powerup! Max radius: %d", pState.Name, pState.MaxRadius)
+		log.Infof("[%s] Powerup! Radius: %d", pState.Name, pState.Radius)
 	}
 }
