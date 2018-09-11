@@ -17,9 +17,15 @@ import (
 	"github.com/setnicka/bomberman/logger"
 	"github.com/setnicka/bomberman/objects"
 	"github.com/setnicka/bomberman/player"
+	"github.com/setnicka/bomberman/player/ai"
 	"github.com/setnicka/bomberman/player/input"
+	"github.com/setnicka/bomberman/player/websocket"
 	"github.com/setnicka/bomberman/scheduler"
 )
+
+func init() {
+	websocketplayer.SetLog(log)
+}
 
 const LogLevel = logger.Debug
 
@@ -29,8 +35,8 @@ var (
 	w, h          int
 	config        Config
 	playersConfig PlayersConf
-	remotePlayers = map[string]*RemotePlayer{}
-	publicWatcher *RemotePlayer
+	players       = map[string]player.Player{}
+	publicWatcher *websocketplayer.Player
 )
 
 func main() {
@@ -58,7 +64,6 @@ func main() {
 	if err := json.Unmarshal(rawConfig, &config); err != nil {
 		panic(err)
 	}
-	log.Debugf("Config: %+v", config)
 
 	// 2. Load players
 	rawPlayers, err := ioutil.ReadFile(playersConfigFile)
@@ -85,8 +90,9 @@ func main() {
 	game := game.NewGame(turnDuration, config.TotalBombsPowerups, config.TotalRadiusPowerups)
 
 	game.Players = map[*player.State]player.Player{}
-	var debugPlayer *RemotePlayer
-	for _, p := range playersConfig {
+	var inputChan chan player.Move
+
+	for i, p := range playersConfig {
 		state := player.State{
 			BasicState: player.BasicState{
 				Name:    p.Name,
@@ -101,16 +107,25 @@ func main() {
 			},
 			GameObject: &objects.TboxPlayer{p.Symbol},
 		}
-		//game.Players[&state] = bombertcp.NewTcpPlayer(state, "0.0.0.0:40000", log)
-		remotePlayers[p.ID] = NewRemotePlayer(p, state)
-		game.Players[&state] = remotePlayers[p.ID]
-		if debug && debugPlayer == nil {
-			debugPlayer = remotePlayers[p.ID]
+
+		switch p.Type {
+		case LOCAL_PLAYER:
+			if inputChan != nil {
+				panic(fmt.Errorf("Cannot have more than one local player, player '%s' could not be initialized", p.Name))
+			}
+			inputChan = make(chan player.Move)
+			players[p.ID] = inputplayer.New(state, inputChan)
+		case WEBSOCKET_PLAYER:
+			players[p.ID] = websocketplayer.New(state)
+		case AI_PLAYER:
+			players[p.ID] = ai.NewRandomPlayer(state, int64(i))
 		}
+		game.Players[&state] = players[p.ID]
+		//game.Players[&state] = bombertcp.NewTcpPlayer(state, "0.0.0.0:40000", log)
 	}
 	// Add dead public player for watching the game
 	state := player.State{BasicState: player.BasicState{Alive: false}, Hidden: true}
-	publicWatcher = NewRemotePlayer(PlayerConf{Name: "Public"}, state)
+	publicWatcher = websocketplayer.New(state)
 	game.Players[&state] = publicWatcher
 
 	runtime.GOMAXPROCS(1 + len(game.Players))
@@ -148,8 +163,11 @@ func main() {
 		log.Debugf("Polling events.")
 		for {
 			ev := termbox.PollEvent()
-			if pm, ok := toPlayerMove(ev); ok && debug && debugPlayer != nil {
-				debugPlayer.forwardMove(pm)
+			if pm, ok := toPlayerMove(ev); ok && inputChan != nil {
+				select {
+				case inputChan <- pm:
+				default:
+				}
 			} else {
 				evChan <- ev
 			}
@@ -198,12 +216,6 @@ func MainLoop(g *game.Game, board board.Board, evChan <-chan termbox.Event) {
 			return
 		}
 	}
-}
-
-func initLocalPlayer(pState player.State) (player.Player, chan<- player.Move) {
-	keyPlayerChan := make(chan player.Move, 1)
-	keyPlayer := input.NewInputPlayer(pState, keyPlayerChan)
-	return keyPlayer, keyPlayerChan
 }
 
 //////////////

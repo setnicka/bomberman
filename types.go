@@ -1,10 +1,9 @@
 package main
 
-import (
-	"github.com/gorilla/websocket"
-	"time"
-
-	"github.com/setnicka/bomberman/player"
+const (
+	LOCAL_PLAYER     = "local"
+	WEBSOCKET_PLAYER = "websocket"
+	AI_PLAYER        = "ai"
 )
 
 type Config struct {
@@ -36,6 +35,7 @@ type PublicConfig struct {
 type PlayersConf []PlayerConf
 
 type PlayerConf struct {
+	Type     string `json:"type"`
 	ID       string `json:"id"`
 	Name     string `json:"name"`
 	Symbol   string `json:"symbol"`
