@@ -88,10 +88,9 @@ func placeBomb(board board.Board, game *game.Game, placerState *player.State) {
 func explode(game *game.Game, board board.Board, explodeX, explodeY, radius int, placerState *player.State) {
 	board[explodeX][explodeY].Remove(objects.Bomb)
 	board.AsCross(explodeX, explodeY, radius, func(c *cell.Cell) bool {
-
 		for playerState, player := range game.Players {
 			x, y := playerState.X, playerState.Y
-			if c.X == x && c.Y == y {
+			if playerState.Alive && c.X == x && c.Y == y {
 				log.Infof("[%s] Dying in explosion.", player.Name())
 				playerState.Alive = false
 
@@ -103,6 +102,12 @@ func explode(game *game.Game, board board.Board, explodeX, explodeY, radius int,
 				} else {
 					log.Infof("[%s] Receiving %d points for killing '%s'", placer.Name(), config.PointsPerKill, player.Name)
 					placerState.Points += config.PointsPerKill
+				}
+				// Remove killed player from cell
+				cell := board[x][y]
+				if !cell.Remove(playerState.GameObject) {
+					log.Panicf("[%s] player not found at (%d, %d), cell=%#v",
+						player.Name(), x, y, cell)
 				}
 			}
 		}

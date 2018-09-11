@@ -208,10 +208,10 @@ func MainLoop(g *game.Game, board board.Board, evChan <-chan termbox.Event) {
 				alives = append(alives, player)
 			}
 		}
-		if len(alives) == 1 {
+		if len(alives) == 1 && config.AutoStopGame {
 			log.Infof("%s won. All other players are dead.", alives[0].Name())
 			return
-		} else if len(alives) == 0 {
+		} else if len(alives) == 0 && config.AutoStopGame {
 			log.Infof("Draw! All players are dead.")
 			return
 		}
@@ -324,7 +324,7 @@ func movePlayer(g *game.Game, board board.Board, pState *player.State, action pl
 	}
 
 	doMove := func(turn int) error {
-		if board[nextX][nextY].Top() == objects.Flame {
+		if pState.Alive && board[nextX][nextY].Top() == objects.Flame {
 			pState.Alive = false
 			log.Infof("[%s] Died moving into flame.", pState.Name)
 			// Count points for such obvious suicide
@@ -336,6 +336,9 @@ func movePlayer(g *game.Game, board board.Board, pState *player.State, action pl
 				log.Panicf("[%s] player not found at (%d, %d), cell=%#v",
 					pState.Name, pState.X, pState.Y, cell)
 			}
+		}
+		if !pState.Alive {
+			// Player was removed when was killed
 			return nil
 		}
 

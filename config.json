@@ -3,6 +3,7 @@
 	"height": 22,
 	"rock_density": 0.5,
 
+	"auto_stop_game": false,
 	"turn_duration_ms": 200,
 	"turns_to_flamout": 1,
 	"turns_to_replenish_used_bomb": 12,

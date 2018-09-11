@@ -13,7 +13,8 @@ type Config struct {
 	Height      int     `json:"height"`
 	RockDensity float64 `json:"rock_density"`
 
-	TurnDuration int `json:"turn_duration_ms"`
+	TurnDuration int  `json:"turn_duration_ms"`
+	AutoStopGame bool `json:"auto_stop_game"`
 
 	FreeAreaAroundPlayers int `json:"free_area_around_players"`
 	DefaultMaxBombs       int `json:"default_max_bombs"`
