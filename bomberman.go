@@ -342,6 +342,7 @@ func pickPowerUps(board board.Board, pState *player.State, x, y int) {
 	switch c.Top() {
 	case objects.BombPU:
 		pState.MaxBomb++
+		pState.Bombs++
 		c.Pop()
 		log.Infof("[%s] Powerup! Max bombs: %d", pState.Name, pState.MaxBomb)
 	case objects.RadiusPU:

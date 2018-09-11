@@ -17,20 +17,20 @@ func placeBomb(board board.Board, game *game.Game, placerState *player.State) {
 
 	switch {
 	case placerState.Bombs > placerState.MaxBomb:
-		log.Panicf("'%s' has %d/%d bombs", placer.Name(), placerState.Bombs, placerState.MaxBomb)
-	case placerState.Bombs == placerState.MaxBomb:
-		log.Debugf("Failed.")
+		log.Panicf("'%s' has more than it could have bombs %d/%d!", placer.Name(), placerState.Bombs, placerState.MaxBomb)
+	case placerState.Bombs == 0:
+		log.Debugf("'%s' cannot place bomb because player have 0 bombs.", placer.Name())
 		return
 	}
 
-	placerState.Bombs++
+	placerState.Bombs--
 	x, y := placerState.X, placerState.Y
 	// radius is snapshot'd at this point in time
 	radius := placerState.MaxRadius
 
 	replenishBomb := func(turn int) error {
-		if placerState.Bombs > 0 {
-			placerState.Bombs--
+		if placerState.Bombs < placerState.MaxBomb {
+			placerState.Bombs++
 		} else {
 			log.Errorf("[%s] Too many bombs, %d (max %d)", placer.Name(), placerState.Bombs, placerState.MaxBomb)
 		}
