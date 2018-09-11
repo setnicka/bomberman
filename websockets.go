@@ -170,9 +170,14 @@ func (p *RemotePlayer) Name() string {
 	return name
 }
 
-func (i *RemotePlayer) Move() <-chan player.Move {
-	return i.outMoveChan
+func (p *RemotePlayer) Move() <-chan player.Move {
+	return p.outMoveChan
 }
 func (p *RemotePlayer) Update() chan<- player.State {
 	return p.updateChan
+}
+
+// For testing only:
+func (p *RemotePlayer) forwardMove(move player.Move) {
+	p.outMoveChan <- move
 }

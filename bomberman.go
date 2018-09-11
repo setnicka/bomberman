@@ -42,10 +42,12 @@ func main() {
 		gameConfigFile    string
 		playersConfigFile string
 		port              int
+		debug             bool
 	)
 	flag.StringVar(&gameConfigFile, "config", "config.json", "Choose `file` with game configuration.")
 	flag.StringVar(&playersConfigFile, "players", "players.json", "Choose `file` with players configuration.")
 	flag.IntVar(&port, "port", 8000, "Set `port` for remote players")
+	flag.BoolVar(&debug, "debug", false, "Enable control of some player from keyboard")
 	flag.Parse()
 
 	// 2. Load config
@@ -83,6 +85,7 @@ func main() {
 	game := game.NewGame(turnDuration, config.TotalBombsPowerups, config.TotalRadiusPowerups)
 
 	game.Players = map[*player.State]player.Player{}
+	var debugPlayer *RemotePlayer
 	for _, p := range playersConfig {
 		state := player.State{
 			BasicState: player.BasicState{
@@ -101,6 +104,9 @@ func main() {
 		//game.Players[&state] = bombertcp.NewTcpPlayer(state, "0.0.0.0:40000", log)
 		remotePlayers[p.ID] = NewRemotePlayer(p, state)
 		game.Players[&state] = remotePlayers[p.ID]
+		if debug && debugPlayer == nil {
+			debugPlayer = remotePlayers[p.ID]
+		}
 	}
 	// Add dead public player for watching the game
 	state := player.State{BasicState: player.BasicState{Alive: false}, Hidden: true}
@@ -142,18 +148,11 @@ func main() {
 		log.Debugf("Polling events.")
 		for {
 			ev := termbox.PollEvent()
-			/*
-				if pm, ok := toPlayerMove(ev); ok {
-					select {
-					case inputChan <- pm:
-					default:
-						log.Debugf("Dropping event '%#v', player not reading.", ev.Type)
-					}
-				} else {
-					evChan <- ev
-				}
-			*/
-			evChan <- ev
+			if pm, ok := toPlayerMove(ev); ok && debug && debugPlayer != nil {
+				debugPlayer.forwardMove(pm)
+			} else {
+				evChan <- ev
+			}
 		}
 	}()
 
