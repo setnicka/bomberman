@@ -157,6 +157,22 @@ func (p *RemotePlayer) StartClient(conn *websocket.Conn) {
 
 	p.clientChannels[client] = client.updateChan
 
+	// Firstly send game settings
+	gameSettings := config.PubliConfig
+	msg, err := json.Marshal(gameSettings)
+	if err != nil {
+		log.Errorf("[Client %s:%d] Cannot marshal game settings: %v", p.playerConf.Name, client.Id, err)
+		client.Close()
+		return
+	}
+
+	if err := conn.WriteMessage(websocket.TextMessage, msg); err != nil {
+		log.Errorf("[Client %s:%d] Cannot send game settings: %v", p.playerConf.Name, client.Id, err)
+		client.Close()
+		return
+	}
+
+	// Then start workers
 	go client.SendState()
 	go client.ReceiveMoves()
 }
