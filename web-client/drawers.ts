@@ -62,9 +62,9 @@ const createDrawer = (players: string[]) => {
         "Flame": FlameDrawer,
         "F": FlameDrawer,
         "PowerUp(Bomb)": BombPUDrawer,
-        "N": BombPUDrawer,
+        "n": BombPUDrawer,
         "PowerUp(Radius)": RadiusPUDrawer,
-        "R": RadiusPUDrawer,
+        "r": RadiusPUDrawer,
     }
     for (const p of players) {
         drawFunc[p] = PlayerDrawer

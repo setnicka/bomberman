@@ -45,7 +45,10 @@
     #zoomIn { right: 75px; }
     #zoomOut { right: 15px; }
     #zoomIn:hover, #zoomOut:hover { background-color: lightgray }
+    #players .playerName { font-weight: bold }
+    #players .playerMove { float: right; }
   </style>
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
   <div id="scrollpanel">
@@ -54,14 +57,8 @@
   <div id="zoomIn" onclick="client.zoomIn()">+</div>
   <div id="zoomOut" onclick="client.zoomOut()">-</div>
   <div id="sidepanel">
-    <ul>
-      <li>#1 - p1 (Bazmek, Robot, Udelator)<br /> 300 bodů, 12 bomb, 30 radius</li>
-      <li>#2 - p2 (Bazmek, Robot, Udelator)<br /> 300 bodů, 12 bomb, 30 radius</li>
-      <li>#3 - p3 (Bazmek, Robot, Udelator)<br /> 300 bodů, 12 bomb, 30 radius</li>
-      <li>#4 - p4 (Bazmek, Robot, Udelator)<br /> 300 bodů, 12 bomb, 30 radius</li>
-      <li>#5 - p5 (Bazmek, Robot, Udelator)<br /> 300 bodů, 12 bomb, 30 radius</li>
-      <li>#6 - p6 (Bazmek, Robot, Udelator)<br /> 300 bodů, 12 bomb, 30 radius</li>
-    </ul>
+    <ol id="players" start=0>
+    </ol>
   </div>
   <div style="height: 0px; overflow: hidden;">
     <img src="img/bomb.png" id="img-bomb" />
