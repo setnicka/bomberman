@@ -24,8 +24,8 @@ const FlameDrawer = function(ctx : CanvasRenderingContext2D, name, x, y, maxX, m
     ctx.drawImage(img, x, y, maxX, maxY);
 };
 
-const PlayerDrawer = function(ctx: CanvasRenderingContext2D, name: string, x, y, maxX, maxY) {
-    ctx.fillStyle = "cyan";
+const PlayerDrawer = (color: string) => function(ctx: CanvasRenderingContext2D, name: string, x, y, maxX, maxY) {
+    ctx.fillStyle = color;
     ctx.fillRect(x, y, maxX, maxY)
     ctx.font = "100px monospace"
     if (name[0].toLowerCase() == "p" && name.length > 1) {
@@ -49,7 +49,7 @@ const RadiusPUDrawer = function(ctx, name, x, y, maxX, maxY) {
     ctx.drawImage(img, x, y, maxX, maxY);
 };
 
-const createDrawer = (players: string[]) => {
+const createDrawer = (players: [string, string][]) => {
     const drawFunc = {
         "Wall": WallDrawer,
         "#": WallDrawer,
@@ -67,7 +67,7 @@ const createDrawer = (players: string[]) => {
         "r": RadiusPUDrawer,
     }
     for (const p of players) {
-        drawFunc[p] = PlayerDrawer
+        drawFunc[p[0]] = PlayerDrawer(p[1])
     }
     return (ctx, name, x, y, mx, my) => {
         if (name in drawFunc)

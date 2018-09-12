@@ -76,8 +76,8 @@ const FlameDrawer = function (ctx, name, x, y, maxX, maxY) {
     const img = document.getElementById(`img-flame${imgId}`);
     ctx.drawImage(img, x, y, maxX, maxY);
 };
-const PlayerDrawer = function (ctx, name, x, y, maxX, maxY) {
-    ctx.fillStyle = "cyan";
+const PlayerDrawer = (color) => function (ctx, name, x, y, maxX, maxY) {
+    ctx.fillStyle = color;
     ctx.fillRect(x, y, maxX, maxY);
     ctx.font = "100px monospace";
     if (name[0].toLowerCase() == "p" && name.length > 1) {
@@ -116,7 +116,7 @@ const createDrawer = (players) => {
         "r": RadiusPUDrawer,
     };
     for (const p of players) {
-        drawFunc[p] = PlayerDrawer;
+        drawFunc[p[0]] = PlayerDrawer(p[1]);
     }
     return (ctx, name, x, y, mx, my) => {
         if (name in drawFunc)
@@ -145,7 +145,7 @@ const BomberClient = function (canvasId, playerName, raddr) {
         players: ""
     };
     let packet = null;
-    const renderPlayers = (players) => {
+    const renderPlayers = (players, colors) => {
         const serializedPlayers = JSON.stringify(players);
         if (serializedPlayers == boardCache.players)
             return;
@@ -165,6 +165,8 @@ const BomberClient = function (canvasId, playerName, raddr) {
             // li.innerText += `#${i} - `
             const elName = document.createElement(p.Alive ? "span" : "strike");
             elName.classList.add("playerName");
+            elName.style.textShadow = "1px 1px white";
+            elName.style.backgroundColor = colors[i];
             elName.appendChild(document.createTextNode(p.Name));
             li.appendChild(elName);
             const elMove = document.createElement("span");
@@ -182,7 +184,9 @@ const BomberClient = function (canvasId, playerName, raddr) {
         if (packet.Board == null)
             return;
         const players = packet.Players;
+        players.forEach((p, i) => p.Index = i);
         players.sort((a, b) => b.Points - a.Points);
+        const colors = players.map((p) => `hsl(${p.Index * (360 / players.length)}, 100%, 50%)`);
         const board = packet.Board;
         const width = board.length;
         const height = board[0].length;
@@ -196,8 +200,8 @@ const BomberClient = function (canvasId, playerName, raddr) {
             canvas.height = height * tileSize;
             redraw = true;
         }
-        renderPlayers(players);
-        const tileDrawer = createDrawer(players.map((p, i) => "P" + i));
+        renderPlayers(players, colors);
+        const tileDrawer = createDrawer(players.map((p, i) => ["P" + i, colors[i]]));
         if (boardCache.board == null) {
             boardCache.board = Array.from(new Array(height)).map(_ => Array.from(new Array(width)));
         }

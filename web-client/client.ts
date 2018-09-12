@@ -20,7 +20,7 @@ const BomberClient = function(canvasId: string, playerName: string, raddr: strin
     players: ""
   }
   let packet : any = null
-  const renderPlayers = (players: any[]) => {
+  const renderPlayers = (players: any[], colors: string[]) => {
     const serializedPlayers = JSON.stringify(players)
     if (serializedPlayers == boardCache.players) return;
     boardCache.players = serializedPlayers
@@ -39,6 +39,8 @@ const BomberClient = function(canvasId: string, playerName: string, raddr: strin
       // li.innerText += `#${i} - `
       const elName = document.createElement(p.Alive ? "span" : "strike")
       elName.classList.add("playerName")
+      elName.style.textShadow = "1px 1px white"
+      elName.style.backgroundColor = colors[i]
       elName.appendChild(document.createTextNode(p.Name))
       li.appendChild(elName)
       const elMove = document.createElement("span")
@@ -54,7 +56,9 @@ const BomberClient = function(canvasId: string, playerName: string, raddr: strin
     if (packet == null) return;
     if (packet.Board == null) return;
     const players: any[] = packet.Players
+    players.forEach((p, i) => p.Index = i)
     players.sort((a, b) => b.Points - a.Points)
+    const colors = players.map((p) => `hsl(${p.Index * (360 / players.length)}, 100%, 50%)`)
     const board = packet.Board
     const width = board.length
     const height = board[0].length
@@ -68,8 +72,8 @@ const BomberClient = function(canvasId: string, playerName: string, raddr: strin
       canvas.height = height * tileSize
       redraw = true
     }
-    renderPlayers(players)
-    const tileDrawer = createDrawer(players.map((p, i) => "P" + i))
+    renderPlayers(players, colors)
+    const tileDrawer = createDrawer(players.map((p, i) => ["P" + i, colors[i]]))
 
     if (boardCache.board == null) {
       boardCache.board = Array.from(new Array(height)).map(_ => Array.from(new Array(width)))
