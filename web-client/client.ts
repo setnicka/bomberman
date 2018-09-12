@@ -56,7 +56,7 @@ const BomberClient = function(canvasId: string, playerName: string, raddr: strin
     if (packet == null) return;
     if (packet.Board == null) return;
     const players: any[] = packet.Players
-    players.forEach((p, i) => p.Index = i)
+    players.forEach((p, i) => { if (p.Index == null) p.Index = i })
     players.sort((a, b) => b.Points - a.Points)
     const colors = players.map((p) => `hsl(${p.Index * (360 / players.length)}, 100%, 50%)`)
     const board = packet.Board
