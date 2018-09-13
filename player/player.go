@@ -15,6 +15,7 @@ type BasicState struct {
 	Bombs, MaxBomb, Radius int
 	Alive                  bool
 	Points                 int
+	TotalPoints            int `json:"-"`
 }
 
 // State holds all info for one player (including link to exported board and to the other players).

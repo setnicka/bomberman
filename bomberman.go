@@ -37,6 +37,8 @@ var (
 	playersConfig PlayersConf
 	players       = map[string]player.Player{}
 	publicWatcher *websocketplayer.Player
+	pointsFile    string
+	gameId        string
 )
 
 func main() {
@@ -56,6 +58,8 @@ func main() {
 	flag.IntVar(&port, "port", 8000, "Set `port` for remote players")
 	flag.BoolVar(&debug, "debug", false, "Enable control of some player from keyboard")
 	flag.BoolVar(&drawMap, "map", false, "Enable drawing map in the console")
+	flag.StringVar(&pointsFile, "points", "points.json", "Choose `file` to which the points will be saved.")
+	flag.StringVar(&gameId, "id", time.Now().Format("2006-01-02_15:04:05"), "Set game `identificator` for saving into points file")
 	flag.Parse()
 
 	// 2. Load config
@@ -201,8 +205,9 @@ func MainLoop(g *game.Game, board board.Board, evChan <-chan termbox.Event, draw
 			return act.doTurn(turn)
 		})
 
-		consoleDraw(board, g.Players, drawMap)
 		updatePlayers(g, board)
+		savePoints(g.Players)
+		consoleDraw(board, g.Players, drawMap)
 
 		alives := []player.Player{}
 		for pState, player := range g.Players {
@@ -217,6 +222,57 @@ func MainLoop(g *game.Game, board board.Board, evChan <-chan termbox.Event, draw
 			log.Infof("Draw! All players are dead.")
 			return
 		}
+	}
+}
+
+func savePoints(players map[*player.State]player.Player) {
+	results := PointResults{}
+
+	// 1. Load points file
+	if oldContent, err := ioutil.ReadFile(pointsFile); err == nil {
+		if err := json.Unmarshal(oldContent, &results); err != nil {
+			log.Errorf("Cannot unmarshal points from the points file: %v", err)
+		}
+	}
+
+	// 2. Set values
+	change := false
+	results[gameId] = map[string]int{}
+	for state := range players {
+		if !state.Hidden {
+			if results[gameId][state.Name] != state.Points {
+				change = true
+			}
+			results[gameId][state.Name] = state.Points
+		}
+	}
+
+	// 3. Compute total points
+	totalPoints := map[string]int{}
+	for _, gameResults := range results {
+		for playerName, points := range gameResults {
+			totalPoints[playerName] += points
+		}
+	}
+	for state := range players {
+		if value, found := totalPoints[state.Name]; found {
+			state.TotalPoints = value
+		}
+	}
+
+	// When no change no need to save points
+	if !change {
+		return
+	}
+
+	// 4. Save into file
+	newContent, err := json.Marshal(results)
+	if err != nil {
+		log.Errorf("Cannot marshal results: %v", err)
+		return
+	}
+	if err := ioutil.WriteFile(pointsFile, newContent, 0644); err != nil {
+		log.Errorf("Cannot save results: %v", err)
 	}
 }
 

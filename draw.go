@@ -69,7 +69,8 @@ func drawPlayer(state *player.State, x int, y int) {
 		tbprint(x, y, termbox.ColorRed, BG, state.Name)
 	}
 	tbprint(x, y+1, FG, BG, fmt.Sprintf("     Bombs: %d/%d", state.Bombs, state.MaxBomb))
-	tbprint(x, y+2, FG, BG, fmt.Sprintf("    Radius: %d", state.Radius))
-	tbprint(x, y+3, FG, BG, fmt.Sprintf("    Points: %d", state.Points))
-	tbprint(x, y+4, FG, BG, fmt.Sprintf("Resp. time: %v", state.ResponseTime))
+	tbprint(x, y+2, FG, BG, fmt.Sprintf("    Radius: %d   ", state.Radius))
+	tbprint(x, y+3, FG, BG, fmt.Sprintf("    Points: %d   ", state.Points))
+	tbprint(x, y+4, FG, BG, fmt.Sprintf("  Total p.: %d   ", state.TotalPoints))
+	tbprint(x, y+5, FG, BG, fmt.Sprintf("Resp. time: %v   ", state.ResponseTime))
 }
