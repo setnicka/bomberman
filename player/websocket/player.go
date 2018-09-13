@@ -17,7 +17,7 @@ func SetLog(l *logger.Logger) {
 }
 
 type Player struct {
-	state player.State
+	state *player.State
 
 	// Outer communication
 	updateChan  chan player.State
@@ -28,11 +28,9 @@ type Player struct {
 	clientChannels       map[*Client]chan *player.State
 	clientUnregisterChan chan *Client
 	lastClientId         int
-
-	responseTime time.Duration
 }
 
-func New(state player.State) *Player {
+func New(state *player.State) *Player {
 	p := &Player{
 		state:                state,
 		updateChan:           make(chan player.State),
@@ -62,8 +60,8 @@ func (p *Player) loop() {
 		case move := <-p.moveChan:
 			select {
 			case p.outMoveChan <- move:
-				p.responseTime = time.Since(sendTime)
-				log.Debugf("[Player %s] Response time: %v", p.state.Name, p.responseTime)
+				p.state.ResponseTime = time.Since(sendTime)
+				log.Debugf("[Player %s] Response time: %v", p.state.Name, p.state.ResponseTime)
 			default:
 				// skip all other moves in this round
 			}

@@ -1,6 +1,8 @@
 package player
 
 import (
+	"time"
+
 	"github.com/setnicka/bomberman/cell"
 )
 
@@ -19,12 +21,13 @@ type BasicState struct {
 // This is used for exporting whole player's state
 type State struct {
 	BasicState
-	Turn       int
-	Board      *ExportedBoard
-	GameObject cell.GameObject
-	Players    []*BasicState
-	Message    string
-	Hidden     bool `json:"-"`
+	Turn         int
+	Board        *ExportedBoard
+	GameObject   cell.GameObject
+	Players      []*BasicState
+	Message      string
+	Hidden       bool          `json:"-"`
+	ResponseTime time.Duration `json:"-"`
 }
 
 type Move string

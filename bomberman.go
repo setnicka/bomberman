@@ -49,11 +49,13 @@ func main() {
 		playersConfigFile string
 		port              int
 		debug             bool
+		drawMap           bool
 	)
 	flag.StringVar(&gameConfigFile, "config", "config.json", "Choose `file` with game configuration.")
 	flag.StringVar(&playersConfigFile, "players", "players.json", "Choose `file` with players configuration.")
 	flag.IntVar(&port, "port", 8000, "Set `port` for remote players")
 	flag.BoolVar(&debug, "debug", false, "Enable control of some player from keyboard")
+	flag.BoolVar(&drawMap, "map", false, "Enable drawing map in the console")
 	flag.Parse()
 
 	// 2. Load config
@@ -116,7 +118,7 @@ func main() {
 			inputChan = make(chan player.Move)
 			players[p.ID] = inputplayer.New(state, inputChan)
 		case WEBSOCKET_PLAYER:
-			players[p.ID] = websocketplayer.New(state)
+			players[p.ID] = websocketplayer.New(&state)
 		case AI_PLAYER:
 			players[p.ID] = ai.NewRandomPlayer(state, int64(i))
 		}
@@ -125,7 +127,7 @@ func main() {
 	}
 	// Add dead public player for watching the game
 	state := player.State{BasicState: player.BasicState{Alive: false}, Hidden: true}
-	publicWatcher = websocketplayer.New(state)
+	publicWatcher = websocketplayer.New(&state)
 	game.Players[&state] = publicWatcher
 
 	runtime.GOMAXPROCS(1 + len(game.Players))
@@ -175,14 +177,14 @@ func main() {
 	}()
 
 	log.Debugf("Drawing for first time.")
-	board.Draw(game.Players)
+	consoleDraw(board, game.Players, drawMap)
 
 	log.Debugf("Starting.")
 
-	MainLoop(game, board, evChan)
+	MainLoop(game, board, evChan, drawMap)
 }
 
-func MainLoop(g *game.Game, board board.Board, evChan <-chan termbox.Event) {
+func MainLoop(g *game.Game, board board.Board, evChan <-chan termbox.Event, drawMap bool) {
 	for range g.TurnTick.C {
 		if g.IsDone() {
 			log.Infof("Game requested to stop.")
@@ -199,7 +201,7 @@ func MainLoop(g *game.Game, board board.Board, evChan <-chan termbox.Event) {
 			return act.doTurn(turn)
 		})
 
-		board.Draw(g.Players)
+		consoleDraw(board, g.Players, drawMap)
 		updatePlayers(g, board)
 
 		alives := []player.Player{}

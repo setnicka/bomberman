@@ -109,9 +109,14 @@ func (b Board) Traversable(x, y int) bool {
 	return b[x][y].Top().Traversable()
 }
 
-func (b Board) Draw(players map[*player.State]player.Player) {
+func (b Board) Draw(players map[*player.State]player.Player, shift ...int) {
+	shiftY := 0
+	if len(shift) > 0 {
+		shiftY = shift[0]
+	}
+
 	b.forEach(func(c *cell.Cell) {
-		c.Top().Draw(c.X, c.Y)
+		c.Top().Draw(c.X, c.Y+shiftY)
 	})
 
 	for state := range players {
