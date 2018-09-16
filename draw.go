@@ -72,5 +72,9 @@ func drawPlayer(state *player.State, x int, y int) {
 	tbprint(x, y+2, FG, BG, fmt.Sprintf("    Radius: %d   ", state.Radius))
 	tbprint(x, y+3, FG, BG, fmt.Sprintf("    Points: %d   ", state.Points))
 	tbprint(x, y+4, FG, BG, fmt.Sprintf("  Total p.: %d   ", state.TotalPoints))
-	tbprint(x, y+5, FG, BG, fmt.Sprintf("Resp. time: %v   ", state.ResponseTime))
+	if state.Connected {
+		tbprint(x, y+5, termbox.ColorGreen, BG, fmt.Sprintf("Resp. time: %v   ", state.ResponseTime))
+	} else {
+		tbprint(x, y+5, termbox.ColorRed, BG, "Not connected")
+	}
 }

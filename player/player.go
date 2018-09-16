@@ -29,6 +29,7 @@ type State struct {
 	Message      string
 	Hidden       bool          `json:"-"`
 	ResponseTime time.Duration `json:"-"`
+	Connected    bool          `json:"-"`
 }
 
 type Move string

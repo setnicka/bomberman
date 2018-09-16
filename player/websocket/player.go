@@ -57,6 +57,9 @@ func (p *Player) loop() {
 			}
 		case unregisterClient := <-p.clientUnregisterChan:
 			delete(p.clientChannels, unregisterClient)
+			if len(p.clientChannels) == 0 {
+				p.state.Connected = false
+			}
 		case move := <-p.moveChan:
 			select {
 			case p.outMoveChan <- move:
@@ -71,6 +74,7 @@ func (p *Player) loop() {
 
 func (p *Player) StartClient(conn *websocket.Conn, gameSettings interface{}) {
 	p.lastClientId++
+	p.state.Connected = true
 	client := &Client{
 		Id:         p.lastClientId,
 		Player:     p,
