@@ -194,7 +194,18 @@ func main() {
 	log.Debugf("Drawing for first time.")
 	consoleDraw(board, game.Players, drawMap)
 
-	log.Debugf("Starting.")
+	log.Infof("Starting in %d seconds.", config.StartCountdown)
+	startTimer := time.NewTimer(time.Duration(config.StartCountdown) * time.Second)
+outer:
+	for {
+		select {
+		case <-game.TurnTick.C:
+			consoleDraw(board, game.Players, drawMap)
+		case <-startTimer.C:
+			break outer
+		}
+	}
+	log.Infof("Starting.")
 
 	MainLoop(game, board, evChan, drawMap)
 }

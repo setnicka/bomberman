@@ -21,6 +21,8 @@ type Config struct {
 	DefaultBombRadius     int `json:"default_bomb_radius"`
 	TotalRadiusPowerups   int `json:"total_radius_powerups"`
 	TotalBombsPowerups    int `json:"total_bombs_powerups"`
+
+	StartCountdown int `json:"start_countdown"`
 }
 
 type PublicConfig struct {

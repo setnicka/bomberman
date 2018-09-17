@@ -17,5 +17,7 @@
 
 	"points_per_wall": 1,
 	"points_per_kill": 10,
-	"points_per_suicide": -10
+	"points_per_suicide": -10,
+
+	"start_countdown": 10
 }
