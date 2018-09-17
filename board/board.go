@@ -106,6 +106,9 @@ func (b Board) clearAroundPlayers(players map[*player.State]player.Player, radiu
 }
 
 func (b Board) Traversable(x, y int) bool {
+	if x < 0 || y < 0 {
+		return false
+	}
 	return b[x][y].Top().Traversable()
 }
 

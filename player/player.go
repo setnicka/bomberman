@@ -27,6 +27,7 @@ type State struct {
 	GameObject   cell.GameObject
 	Players      []*BasicState
 	Message      string
+	Type         string        `json:"-"`
 	Hidden       bool          `json:"-"`
 	ResponseTime time.Duration `json:"-"`
 	Connected    bool          `json:"-"`

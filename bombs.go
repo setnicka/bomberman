@@ -100,7 +100,7 @@ func explode(game *game.Game, board board.Board, explodeX, explodeY, radius int,
 					log.Infof("[%s] Receiving %d points for suicide", placer.Name(), config.PointsPerSuicide)
 					placerState.Points += config.PointsPerSuicide
 				} else {
-					log.Infof("[%s] Receiving %d points for killing '%s'", placer.Name(), config.PointsPerKill, player.Name)
+					log.Infof("[%s] Receiving %d points for killing '%s'", placer.Name(), config.PointsPerKill, player.Name())
 					placerState.Points += config.PointsPerKill
 				}
 				// Remove killed player from cell

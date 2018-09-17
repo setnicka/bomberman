@@ -111,6 +111,7 @@ func main() {
 				Radius:  config.DefaultBombRadius,
 				Alive:   true,
 			},
+			Type:       p.Type,
 			GameObject: &objects.TboxPlayer{p.Symbol},
 		}
 

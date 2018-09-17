@@ -68,13 +68,16 @@ func drawPlayer(state *player.State, x int, y int) {
 	} else {
 		tbprint(x, y, termbox.ColorRed, BG, state.Name)
 	}
-	tbprint(x, y+1, FG, BG, fmt.Sprintf("     Bombs: %d/%d", state.Bombs, state.MaxBomb))
-	tbprint(x, y+2, FG, BG, fmt.Sprintf("    Radius: %d   ", state.Radius))
-	tbprint(x, y+3, FG, BG, fmt.Sprintf("    Points: %d   ", state.Points))
-	tbprint(x, y+4, FG, BG, fmt.Sprintf("  Total p.: %d   ", state.TotalPoints))
-	if state.Connected {
-		tbprint(x, y+5, termbox.ColorGreen, BG, fmt.Sprintf("Resp. time: %v   ", state.ResponseTime))
-	} else {
-		tbprint(x, y+5, termbox.ColorRed, BG, "Not connected")
+	tbprint(x, y+1, FG, BG, fmt.Sprintf("      Type: %s   ", state.Type))
+	tbprint(x, y+2, FG, BG, fmt.Sprintf("     Bombs: %d/%d", state.Bombs, state.MaxBomb))
+	tbprint(x, y+3, FG, BG, fmt.Sprintf("    Radius: %d   ", state.Radius))
+	tbprint(x, y+4, FG, BG, fmt.Sprintf("    Points: %d   ", state.Points))
+	tbprint(x, y+5, FG, BG, fmt.Sprintf("  Total p.: %d   ", state.TotalPoints))
+	if state.Type == "websocket" {
+		if state.Connected {
+			tbprint(x, y+6, termbox.ColorGreen, BG, fmt.Sprintf("Resp. time: %v   ", state.ResponseTime))
+		} else {
+			tbprint(x, y+6, termbox.ColorRed, BG, "Not connected")
+		}
 	}
 }
