@@ -7,7 +7,7 @@ const setupDaDScrolling = (panel: HTMLElement) => {
 }
 
 
-const BomberClient = function(canvasId: string, playerName: string, raddr: string) {
+const BomberClient = function(canvasId: string, playerName: string) {
   var canvas = document.getElementById(canvasId) as HTMLCanvasElement
   const scrollPanel = canvas.parentElement!
   setupDaDScrolling(scrollPanel)
@@ -55,8 +55,9 @@ const BomberClient = function(canvasId: string, playerName: string, raddr: strin
   const draw = () => {
     if (packet == null) return;
     if (packet.Board == null) return;
-    const players: any[] = packet.Players
+    const players: any[] = packet.Players;
     players.forEach((p, i) => { if (p.Index == null) p.Index = i })
+    players.sort((a, b) => b.Name > a.Name ? 1 : -1)
     players.sort((a, b) => b.Points - a.Points)
     const colors = players.map((p) => `hsl(${p.Index * (360 / players.length)}, 100%, 50%)`)
     const board = packet.Board
@@ -115,17 +116,22 @@ const BomberClient = function(canvasId: string, playerName: string, raddr: strin
       draw()
       scrollPanel.scrollLeft *= 0.5
       scrollPanel.scrollTop *= 0.5
+    },
+    init() {
+      const raddr = (document.getElementById("server-address") as HTMLSelectElement).value
+      var endpoint = "ws://"+raddr.replace("server", location.hostname)+"";
+      if (updateSrv) { updateSrv.close(); }
+
+      updateSrv = WS(endpoint, playerName, function(e, conn) {
+        var state = JSON.parse(e.data);
+        packet = state
+        draw();
+      });
     }
   }
+  var updateSrv:any;
+  that.init()
   draw()
-
-  var endpoint = "ws://"+raddr+"";
-
-  var updateSrv = WS(endpoint, playerName, function(e, conn) {
-    var state = JSON.parse(e.data);
-    packet = state
-    draw();
-  });
 
   // var moveSrv = WS(endpoint+"/move");
 

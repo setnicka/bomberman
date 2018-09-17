@@ -3,10 +3,15 @@ interface BombermanWS {
 }
 
 const WS = function(url: string, token: string, receiveFn: (msg: MessageEvent, conn: BombermanWS) => void) {
+    var closed = false;
     const out = {
         sckt: new WebSocket(url),
         send(event: string) {
             out.sckt.send(event)
+        },
+        close() {
+            closed = true;
+            out.sckt.close();
         }
     }
 
@@ -21,6 +26,7 @@ const WS = function(url: string, token: string, receiveFn: (msg: MessageEvent, c
 
         let tryAgainTimeout = 0;
         const tryAgain = (event: Event) => {
+            if (closed) return;
             if (!tryAgainTimeout)
                 tryAgainTimeout = setTimeout(() => {
                     tryAgainTimeout = 0;

@@ -28,10 +28,15 @@ var Keyboard = function () {
     return that;
 };
 const WS = function (url, token, receiveFn) {
+    var closed = false;
     const out = {
         sckt: new WebSocket(url),
         send(event) {
             out.sckt.send(event);
+        },
+        close() {
+            closed = true;
+            out.sckt.close();
         }
     };
     const init = function () {
@@ -42,6 +47,8 @@ const WS = function (url, token, receiveFn) {
         };
         let tryAgainTimeout = 0;
         const tryAgain = (event) => {
+            if (closed)
+                return;
             if (!tryAgainTimeout)
                 tryAgainTimeout = setTimeout(() => {
                     tryAgainTimeout = 0;
@@ -133,7 +140,7 @@ const setupDaDScrolling = (panel) => {
         }
     };
 };
-const BomberClient = function (canvasId, playerName, raddr) {
+const BomberClient = function (canvasId, playerName) {
     var canvas = document.getElementById(canvasId);
     const scrollPanel = canvas.parentElement;
     setupDaDScrolling(scrollPanel);
@@ -186,6 +193,7 @@ const BomberClient = function (canvasId, playerName, raddr) {
         const players = packet.Players;
         players.forEach((p, i) => { if (p.Index == null)
             p.Index = i; });
+        players.sort((a, b) => b.Name > a.Name ? 1 : -1);
         players.sort((a, b) => b.Points - a.Points);
         const colors = players.map((p) => `hsl(${p.Index * (360 / players.length)}, 100%, 50%)`);
         const board = packet.Board;
@@ -239,15 +247,23 @@ const BomberClient = function (canvasId, playerName, raddr) {
             draw();
             scrollPanel.scrollLeft *= 0.5;
             scrollPanel.scrollTop *= 0.5;
+        },
+        init() {
+            const raddr = document.getElementById("server-address").value;
+            var endpoint = "ws://" + raddr.replace("server", location.hostname) + "";
+            if (updateSrv) {
+                updateSrv.close();
+            }
+            updateSrv = WS(endpoint, playerName, function (e, conn) {
+                var state = JSON.parse(e.data);
+                packet = state;
+                draw();
+            });
         }
     };
+    var updateSrv;
+    that.init();
     draw();
-    var endpoint = "ws://" + raddr + "";
-    var updateSrv = WS(endpoint, playerName, function (e, conn) {
-        var state = JSON.parse(e.data);
-        packet = state;
-        draw();
-    });
     // var moveSrv = WS(endpoint+"/move");
     // var kb = Keyboard();
     // kb.map(kb.Up, "up")

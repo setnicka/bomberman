@@ -57,6 +57,9 @@
   <div id="zoomIn" onclick="client.zoomIn()">+</div>
   <div id="zoomOut" onclick="client.zoomOut()">-</div>
   <div id="sidepanel">
+    <select id="server-address" onchange="client.init()">
+      <option>server:8000</option>
+    </select>
     <ol id="players" start=0>
     </ol>
   </div>
@@ -72,7 +75,7 @@
   </div>
 <script src="script.js"></script>
 <script>
-var client = BomberClient("canvas", "public", location.hostname + ":8000");
+var client = BomberClient("canvas", "public");
 </script>
 </body>
 </html>
