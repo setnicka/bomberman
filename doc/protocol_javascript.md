@@ -33,8 +33,8 @@ connection.onmessage = (message) => {
     // naše souřadnice
     const X = state.X,
           Y = state.Y;
-    // toto je políčko na pravo od nás
-    const polickoVPravo = state.Board[X + 1][Y];
+    // toto je políčko napravo od nás
+    const polickoVpravo = state.Board[X + 1][Y];
     console.log(polickoVPravo);
     // connection.send("up")
     // connection.send("down")

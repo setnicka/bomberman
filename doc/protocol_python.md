@@ -19,12 +19,12 @@ def on_message(ws, message):
         print("Chcípnul jsem")
         ws.close()
         return
-        
+
 
     # naše souřadnice
     (X, Y) = (state['X'], state['Y'])
-    # toto je políčko na pravo od nás
-    policko_v_pravo = state['Board'][X + 1][Y]
+    # toto je políčko napravo od nás
+    policko_vpravo = state['Board'][X + 1][Y]
     # ws.send("up")
     # ws.send("down")
     # ws.send("right")
