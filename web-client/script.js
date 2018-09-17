@@ -37,6 +37,7 @@ const WS = function (url, token, receiveFn) {
         close() {
             closed = true;
             out.sckt.close();
+            console.log("Closing connection");
         }
     };
     const init = function () {
@@ -193,8 +194,8 @@ const BomberClient = function (canvasId, playerName) {
         const players = packet.Players;
         players.forEach((p, i) => { if (p.Index == null)
             p.Index = i; });
-        players.sort((a, b) => b.Name > a.Name ? 1 : -1);
-        players.sort((a, b) => b.Points - a.Points);
+        players.sort((a, b) => b.Name > a.Name ? -1 : 1);
+        //players.sort((a, b) => b.Points - a.Points);
         const colors = players.map((p) => `hsl(${p.Index * (360 / players.length)}, 100%, 50%)`);
         const board = packet.Board;
         const width = board.length;
