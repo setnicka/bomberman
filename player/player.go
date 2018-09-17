@@ -11,6 +11,7 @@ type ExportedBoard []string
 // BasicState holds basic fields related to the one player
 type BasicState struct {
 	Name                   string
+	Number                 int
 	X, Y, LastX, LastY     int
 	Bombs, MaxBomb, Radius int
 	Alive                  bool

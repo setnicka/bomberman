@@ -25,8 +25,9 @@ type Player struct {
 	outMoveChan chan player.Move
 
 	// State distribution to clients
-	clientChannels       map[*Client]chan *player.State
-	clientUnregisterChan chan *Client
+	clientChannels       map[int]chan *player.State
+	clientUnregisterChan chan int
+	clientRegisterChan   chan *websocket.Conn
 	lastClientId         int
 }
 
@@ -36,8 +37,9 @@ func New(state *player.State) *Player {
 		updateChan:           make(chan player.State),
 		moveChan:             make(chan player.Move),
 		outMoveChan:          make(chan player.Move, 1),
-		clientChannels:       map[*Client]chan *player.State{},
-		clientUnregisterChan: make(chan *Client),
+		clientChannels:       map[int]chan *player.State{},
+		clientUnregisterChan: make(chan int),
+		clientRegisterChan:   make(chan *websocket.Conn),
 	}
 
 	go p.loop()
@@ -52,6 +54,9 @@ func (p *Player) loop() {
 		case update := <-p.updateChan:
 			sendTime = time.Now()
 			// Distribute update to all clients
+			if len(p.clientChannels) > 0 {
+				log.Debugf("SENDING INFO TO ALL CLIENTS OF %s", p.Name())
+			}
 			for _, clientChan := range p.clientChannels {
 				clientChan <- &update
 			}
@@ -68,43 +73,46 @@ func (p *Player) loop() {
 			default:
 				// skip all other moves in this round
 			}
+		case conn := <-p.clientRegisterChan:
+			p.state.Connected = true
+			p.lastClientId++
+			client := &Client{
+				Id:         p.lastClientId,
+				Player:     p,
+				Conn:       conn,
+				updateChan: make(chan *player.State, 1),
+				moveChan:   p.moveChan,
+			}
+
+			p.clientChannels[client.Id] = client.updateChan
+
+			// Then start workers
+			go client.SendState()
+			go client.ReceiveMoves()
 		}
 	}
 }
 
 func (p *Player) StartClient(conn *websocket.Conn, gameSettings interface{}) {
-	p.lastClientId++
-	p.state.Connected = true
-	client := &Client{
-		Id:         p.lastClientId,
-		Player:     p,
-		Conn:       conn,
-		updateChan: make(chan *player.State, 1),
-		moveChan:   p.moveChan,
-	}
-
-	p.clientChannels[client] = client.updateChan
-
 	// Firstly send game settings
 	msg, err := json.Marshal(gameSettings)
 	if err != nil {
-		log.Errorf("[Client %s:%d] Cannot marshal game settings: %v", p.state.Name, client.Id, err)
-		client.Close()
+		log.Errorf("[Client %s:NEW] Cannot marshal game settings: %v", p.state.Name, err)
+		conn.Close()
 		return
 	}
 
 	if err := conn.WriteMessage(websocket.TextMessage, msg); err != nil {
-		log.Errorf("[Client %s:%d] Cannot send game settings: %v", p.state.Name, client.Id, err)
-		client.Close()
+		log.Errorf("[Client %s:NEW] Cannot send game settings: %v", p.state.Name, err)
+		conn.Close()
 		return
 	}
 
-	// Then start workers
-	go client.SendState()
-	go client.ReceiveMoves()
+	p.clientRegisterChan <- conn
+
 }
 
-func (p *Player) UnregisterClient(client *Client) {
+func (p *Player) UnregisterClient(client int) {
 	p.clientUnregisterChan <- client
 }
 

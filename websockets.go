@@ -29,6 +29,7 @@ func WebsocketsStart(port int) error {
 		_, msg, err := conn.ReadMessage()
 		if err != nil {
 			log.Errorf("Problem during receiving initial message: %v", err)
+			return
 		}
 		parts := strings.Split(string(msg), ":")
 		if len(parts) == 2 {

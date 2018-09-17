@@ -112,6 +112,7 @@ func main() {
 		state := player.State{
 			BasicState: player.BasicState{
 				Name:    p.Name,
+				Number:  i,
 				X:       p.StartX,
 				Y:       p.StartY,
 				LastX:   -1,

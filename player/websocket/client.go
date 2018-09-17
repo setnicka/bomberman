@@ -58,5 +58,5 @@ func (c *Client) Close() {
 	c.Conn.Close()
 	// Unregister Client from WebsocketPlayer object
 	log.Debugf("Stopping client %d for player '%s'", c.Id, c.Player.state.Name)
-	c.Player.UnregisterClient(c)
+	c.Player.UnregisterClient(c.Id)
 }
