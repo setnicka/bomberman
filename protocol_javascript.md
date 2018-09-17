@@ -13,7 +13,7 @@ function init() {
         console.log("Connected");
     }
 
-
+    // připojit se znovu po přerušení spojení
     connection.onclose = (event) => {
         setTimeout(() => init(), 400);
     }
@@ -28,6 +28,7 @@ connection.onmessage = (message) => {
         console.log("Konfigurace hry:", state);
         return;
     }
+    if (!state.Alive) { console.log("Chcípnul jsem"); connection.close(); return; }
 
     // naše souřadnice
     const X = state.X,

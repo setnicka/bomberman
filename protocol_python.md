@@ -15,6 +15,12 @@ def on_message(ws, message):
         print(state)
         return
 
+    if not state['Alive']:
+        print("Chcípnul jsem")
+        ws.close()
+        return
+        
+
     # naše souřadnice
     (X, Y) = (state['X'], state['Y'])
     # toto je políčko na pravo od nás
