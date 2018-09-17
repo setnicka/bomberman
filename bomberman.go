@@ -79,14 +79,24 @@ func main() {
 	if err := json.Unmarshal(rawPlayers, &playersConfig); err != nil {
 		panic(err)
 	}
+	randomPositions := genRandomPositions(len(playersConfig))
 	for i, player := range playersConfig {
-		if player.StartX < 0 {
-			player.StartX += config.Width + 1
-		}
-		if player.StartY < 0 {
-			player.StartY += config.Height + 1
+		switch player.Position {
+		case "random":
+			player.StartX = rand.Intn(config.Width) + 1
+			player.StartY = rand.Intn(config.Height) + 1
+		case "randomList":
+			player.StartX, player.StartY = randomPositions[i][0], randomPositions[i][1]
+		default:
+			if player.StartX < 0 {
+				player.StartX += config.Width + 1
+			}
+			if player.StartY < 0 {
+				player.StartY += config.Height + 1
+			}
 		}
 		playersConfig[i] = player
+		log.Debugf("Player '%s' starts at '%dx%d'", player.Name, player.StartX, player.StartY)
 	}
 	log.Debugf("Players: %+v", playersConfig)
 
@@ -224,6 +234,31 @@ func MainLoop(g *game.Game, board board.Board, evChan <-chan termbox.Event, draw
 			return
 		}
 	}
+}
+
+func genRandomPositions(n int) [][2]int {
+	// Random positions - for max 4 players
+	w := config.Width
+	h := config.Height
+	positions := [][2]int{{1, 1}, {1, h}, {w, 1}, {w, h}}
+	// If there are more than 4 players add middles of sides
+	if len(playersConfig) > 4 {
+		positions = append(positions, [][2]int{
+			{1, h / 2}, {w / 2, 1}, {w, h / 2}, {w / 2, h},
+		}...)
+	}
+	if len(playersConfig) > 8 {
+		// Add four positions in smaller square near the middle
+		positions = append(positions, [][2]int{
+			{w / 3, h / 3}, {w / 3, 2 * h / 3}, {2 * w / 3, h / 3}, {2 * w / 3, 2 * h / 3},
+		}...)
+	}
+
+	// random shuffle and return
+	rand.Shuffle(n, func(i, j int) {
+		positions[i], positions[j] = positions[j], positions[i]
+	})
+	return positions
 }
 
 func savePoints(players map[*player.State]player.Player) {

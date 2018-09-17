@@ -43,6 +43,7 @@ type PlayerConf struct {
 	Password string `json:"password"`
 	StartX   int    `json:"startX"`
 	StartY   int    `json:"startY"`
+	Position string `json:"position"`
 }
 
 type PointResults map[string]map[string]int

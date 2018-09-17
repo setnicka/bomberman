@@ -15,7 +15,7 @@ import (
 const (
 	PLAYER_X_OFFSET = 25
 	PLAYER_Y_OFFSET = 8
-	PLAYERS_IN_LINE = 3
+	PLAYERS_IN_LINE = 6
 	FG              = termbox.ColorWhite
 	BG              = termbox.ColorBlack
 )
