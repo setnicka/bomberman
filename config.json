@@ -1,15 +1,15 @@
 {
-	"width": 51,
-	"height": 22,
+	"width": 41,
+	"height": 41,
 	"rock_density": 0.5,
 
 	"auto_stop_game": false,
-	"turn_duration_ms": 200,
+	"turn_duration_ms": 300,
 	"turns_to_flamout": 1,
 	"turns_to_replenish_used_bomb": 12,
 	"turns_to_explode": 10,
 
-	"free_area_around_players": 10,
+	"free_area_around_players": 2,
 	"default_max_bombs": 3,
 	"default_bomb_radius": 3,
 	"total_radius_powerups": 20,
@@ -19,5 +19,5 @@
 	"points_per_kill": 10,
 	"points_per_suicide": -10,
 
-	"start_countdown": 10
+	"start_countdown": 1
 }

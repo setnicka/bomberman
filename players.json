@@ -1,63 +1,70 @@
 [{
 	"type": "websocket",
+	"id": "player0",
+	"name": "Player 00",
+	"symbol": "P0",
+	"password": "1111",
+	"position": "randomList"
+},{
+	"type": "websocket",
 	"id": "player1",
-	"name": "Player 1",
+	"name": "Player 01",
 	"symbol": "P1",
 	"password": "1111",
 	"position": "randomList"
 },{
 	"type": "websocket",
 	"id": "player2",
-	"name": "Player 2",
+	"name": "Player 02",
 	"symbol": "P2",
 	"password": "1111",
 	"position": "randomList"
 },{
 	"type": "ai",
 	"id": "player3",
-	"name": "Player 3",
+	"name": "Player 03",
 	"symbol": "P3",
 	"password": "1111",
 	"position": "randomList"
 },{
 	"type": "local",
 	"id": "player4",
-	"name": "Player 4",
+	"name": "Player 04",
 	"symbol": "P4",
 	"password": "1111",
 	"position": "randomList"
 },{
 	"type": "websocket",
 	"id": "player5",
-	"name": "Player 5",
+	"name": "Player 05",
 	"symbol": "P5",
 	"password": "1111",
 	"position": "randomList"
 },{
 	"type": "websocket",
 	"id": "player6",
-	"name": "Player 6",
+	"name": "Player 06",
 	"symbol": "P6",
 	"password": "1111",
 	"position": "randomList"
 },{
 	"type": "websocket",
 	"id": "player7",
-	"name": "Player 7",
+	"name": "Player 07",
 	"symbol": "P7",
 	"password": "1111",
 	"position": "randomList"
 },{
 	"type": "websocket",
 	"id": "player8",
-	"name": "Player 8",
+	"name": "Player 08",
 	"symbol": "P8",
 	"password": "1111",
 	"position": "randomList"
 },{
 	"type": "websocket",
 	"id": "player9",
-	"name": "Player 9",
+	"name": "Player 09",
 	"symbol": "P9",
 	"password": "1111",
 	"position": "randomList"
@@ -73,13 +80,6 @@
 	"id": "player11",
 	"name": "Player 11",
 	"symbol": "PB",
-	"password": "1111",
-	"position": "randomList"
-},{
-	"type": "websocket",
-	"id": "player12",
-	"name": "Player 12",
-	"symbol": "PC",
 	"password": "1111",
 	"position": "randomList"
 }]
