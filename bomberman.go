@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math/rand"
-	"runtime"
+	//"runtime"
 	"time"
 
 	//"github.com/aybabtme/bombertcp"
@@ -123,6 +123,7 @@ func main() {
 				Alive:   true,
 			},
 			Type:       p.Type,
+			Symbol:     p.Symbol,
 			GameObject: &objects.TboxPlayer{p.Symbol},
 		}
 
@@ -146,7 +147,7 @@ func main() {
 	publicWatcher = websocketplayer.New(&state)
 	game.Players[&state] = publicWatcher
 
-	runtime.GOMAXPROCS(1 + len(game.Players))
+	//runtime.GOMAXPROCS(1 + 2*len(game.Players))
 
 	log.Debugf("Setup board.")
 	board := board.SetupBoard(game, config.Width+2, config.Height+2, config.FreeAreaAroundPlayers, config.RockDensity)

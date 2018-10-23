@@ -63,10 +63,11 @@ func tbprint(x, y int, fg, bg termbox.Attribute, msg string) {
 }
 
 func drawPlayer(state *player.State, x int, y int) {
+	name := fmt.Sprintf("[%s]%s", state.Symbol, state.Name)
 	if state.Alive {
-		tbprint(x, y, termbox.ColorGreen, BG, state.Name)
+		tbprint(x, y, termbox.ColorGreen, BG, name)
 	} else {
-		tbprint(x, y, termbox.ColorRed, BG, state.Name)
+		tbprint(x, y, termbox.ColorRed, BG, name)
 	}
 	tbprint(x, y+1, FG, BG, fmt.Sprintf("      Type: %s   ", state.Type))
 	tbprint(x, y+2, FG, BG, fmt.Sprintf("     Bombs: %d/%d", state.Bombs, state.MaxBomb))

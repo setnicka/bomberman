@@ -34,7 +34,7 @@ type Player struct {
 func New(state *player.State) *Player {
 	p := &Player{
 		state:                state,
-		updateChan:           make(chan player.State),
+		updateChan:           make(chan player.State, 1),
 		moveChan:             make(chan player.Move),
 		outMoveChan:          make(chan player.Move, 1),
 		clientChannels:       map[int]chan *player.State{},
@@ -55,7 +55,7 @@ func (p *Player) loop() {
 			sendTime = time.Now()
 			// Distribute update to all clients
 			if len(p.clientChannels) > 0 {
-				log.Debugf("SENDING INFO TO ALL CLIENTS OF %s", p.Name())
+				log.Debugf("SENDING INFO TO ALL CLIENTS OF %s: %v", p.Name(), p.clientChannels)
 			}
 			for _, clientChan := range p.clientChannels {
 				clientChan <- &update

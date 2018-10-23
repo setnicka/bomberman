@@ -135,12 +135,9 @@ func explode(game *game.Game, board board.Board, explodeX, explodeY, radius int,
 
 func removeFlame(board board.Board, x, y, radius int) {
 	board.AsCross(x, y, radius, func(c *cell.Cell) bool {
-		if c.Top() == objects.Flame {
-			// Remove flame
-			c.Pop()
-			// And remove rock if there was some
-			if c.Top() == objects.Rock {
-				c.Pop()
+		if c.Remove(objects.Flame) {
+			// Remove rock if there was some
+			if c.Remove(objects.Rock) {
 				return false
 			}
 			return true

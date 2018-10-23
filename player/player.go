@@ -29,6 +29,7 @@ type State struct {
 	Players      []*BasicState
 	Message      string
 	Type         string        `json:"-"`
+	Symbol       string        `json:"-"`
 	Hidden       bool          `json:"-"`
 	ResponseTime time.Duration `json:"-"`
 	Connected    bool          `json:"-"`

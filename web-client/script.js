@@ -43,6 +43,7 @@ const WS = function (url, token, receiveFn) {
     const init = function () {
         out.sckt.onmessage = (msg) => receiveFn(msg, out);
         out.sckt.onopen = function (event) {
+                console.log("Connecting...")
             out.sckt.send(token);
             console.log("Connected" + event);
         };
@@ -263,6 +264,7 @@ const BomberClient = function (canvasId, playerName) {
         }
     };
     var updateSrv;
+    console.log("Initializing connection")
     that.init();
     draw();
     // var moveSrv = WS(endpoint+"/move");
